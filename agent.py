@@ -153,8 +153,11 @@ def main():
     open(LASTRUN, "w").write(str(time.time()))
     seen = set(json.load(open(STATE))) if os.path.exists(STATE) else set()
     errors, found = [], []
+    rooms_param = ",".join(f"{n}-1" for n in range(int(cfg["min_rooms"]), 6))
     for src in cfg["sources"]:
         try:
+            if src.get("url"):
+                src = {**src, "url": src["url"].replace("{budget_max}", str(cfg["budget_max"])).replace("{rooms}", rooms_param)}
             items = FETCHERS[src["type"]](src)
             print(f"{src['name']}: {len(items)} ilan"); found += items
         except Exception as e:
