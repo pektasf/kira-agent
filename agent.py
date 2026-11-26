@@ -20,11 +20,17 @@ def load_cfg():
         cfg = yaml.safe_load(f)
     if os.path.exists(SETTINGS):
         st = json.load(open(SETTINGS, encoding="utf-8"))
-        for k in ("budget_max", "min_rooms", "allow_furnished", "max_building_age",
-                  "attic_needs_elevator", "send_min_score", "digest_min_score", "frequency_minutes"):
+        for k in ("budget_max", "min_rooms", "allow_furnished", "max_building_age", "attic_needs_elevator",
+                  "send_min_score", "digest_min_score", "frequency_minutes", "min_sqm", "notify",
+                  "exclude_words", "prefer_words", "rescan_id"):
             if k in st: cfg[k] = st[k]
         amap = {al: t for t, v in cfg["tiers"].items() for al in v["aliases"]}
-        amap.update(st.get("areas", {}))            # {alias: 0|1|2|3}; 0 = kapalı
+        amap.update(st.get("areas", {}))
+        for d in st.get("districts", []):
+            amap[d["alias"]] = d.get("tier", 2)
+            cfg["sources"].append({"name": "Emlakjet " + d["label"], "type": "listing_site",
+                "url": "https://www.emlakjet.com/kiralik-daire/istanbul-" + d["slug"] + "?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}",
+                "link_pattern": "/ilan/", "base": "https://www.emlakjet.com"})
         for t in cfg["tiers"]: cfg["tiers"][t]["aliases"] = [a for a, x in amap.items() if int(x) == int(t)]
     return cfg
 
@@ -96,6 +102,12 @@ def score(item, cfg):
     elevator = bool(re.search(r"asansor", t)) and "asansorsuz" not in t and "asansor yok" not in t
     if attic and cfg["attic_needs_elevator"] and not elevator: return None
 
+    sq = re.search(r"(\d{2,3})\s*m(?:²|2)", t)
+    sqm = int(sq.group(1)) if sq else None
+    if cfg.get("min_sqm") and sqm and sqm < int(cfg["min_sqm"]): return None
+    for w in cfg.get("exclude_words", []):
+        if fold(w) in t: return None
+    pts += min(15, 5 * sum(1 for w in cfg.get("prefer_words", []) if fold(w) in t))
     # --- mahalle ---
     tier_hit = None
     for tier in sorted(cfg["tiers"]):
@@ -133,7 +145,7 @@ def score(item, cfg):
         notes.append("🏢 Bina yaşı belirtilmemiş")
     if elevator: pts += 5; notes.append("🛗 Asansör var")
     if attic: notes.append("🏠 Çatı katı (asansör var)")
-    return min(pts, 100), notes, {"price": price, "rooms": rooms, "age": age, "tier": tier}
+    return min(pts, 100), notes, {"price": price, "rooms": rooms, "age": age, "tier": tier, "sqm": sqm}
 
 # ---------- TELEGRAM ----------
 def send(msg):
@@ -146,14 +158,17 @@ def send(msg):
 def main():
     import time, datetime
     cfg = load_cfg()
+    prev = json.load(open(RESULTS, encoding="utf-8")) if os.path.exists(RESULTS) else {}
+    rescan = bool(cfg.get("rescan_id")) and str(cfg["rescan_id"]) != prev.get("rescan_done", "")
     freq = int(cfg.get("frequency_minutes", 60))
-    if not os.environ.get("FORCE") and os.path.exists(LASTRUN):
+    if not os.environ.get("FORCE") and not rescan and os.path.exists(LASTRUN):
         if time.time() - float(open(LASTRUN).read() or 0) < freq * 60 - 300:
             print("Henüz zamanı gelmedi"); return
     open(LASTRUN, "w").write(str(time.time()))
-    seen = set(json.load(open(STATE))) if os.path.exists(STATE) else set()
-    errors, found = [], []
+    out = print if (rescan or not cfg.get("notify", True)) else send
+    seen = set() if rescan else (set(json.load(open(STATE))) if os.path.exists(STATE) else set())
     rooms_param = ",".join(f"{n}-1" for n in range(int(cfg["min_rooms"]), 6))
+    errors, found = [], []
     for src in cfg["sources"]:
         try:
             if src.get("url"):
@@ -172,19 +187,19 @@ def main():
     results.sort(key=lambda x: -x[0])
 
     for sc, notes, it, _ in [r for r in results if r[0] >= cfg["send_min_score"]]:
-        send(f"🏡 Uyum: %{sc}  ({it['source']})\n" + "\n".join(notes) + f"\n{it['url']}")
+        out(f"🏡 Uyum: %{sc}  ({it['source']})\n" + "\n".join(notes) + f"\n{it['url']}")
     mid = [r for r in results if cfg["digest_min_score"] <= r[0] < cfg["send_min_score"]]
     if mid:
-        send("📋 Orta uyumlu ilanlar:\n" + "\n".join(f"%{r[0]} – {r[2]['url']}" for r in mid))
+        out("📋 Orta uyumlu ilanlar:\n" + "\n".join(f"%{r[0]} – {r[2]['url']}" for r in mid))
     if errors and not found:
-        send("⚠️ Hiçbir kaynaktan ilan alınamadı:\n" + "\n".join(errors))
+        out("⚠️ Hiçbir kaynaktan ilan alınamadı:\n" + "\n".join(errors))
 
-    old = json.load(open(RESULTS, encoding="utf-8"))["items"] if os.path.exists(RESULTS) else []
-    now = datetime.datetime.utcnow().isoformat(timespec="minutes") + "Z"
+    old = [] if rescan else prev.get("items", [])
+    now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
     new = [{"score": sc, "url": it["url"], "source": it["source"], "notes": n, "found": now, **m}
            for sc, n, it, m in results]
-    items = (new + old)[:300]
-    json.dump({"updated": now, "errors": errors, "items": items},
+    done = str(cfg["rescan_id"]) if rescan else prev.get("rescan_done", "")
+    json.dump({"updated": now, "errors": errors, "rescan_done": done, "items": (new + old)[:300]},
               open(RESULTS, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump(sorted(seen), open(STATE, "w"))
 
