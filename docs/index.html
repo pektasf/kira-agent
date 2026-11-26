@@ -26,7 +26,7 @@
 <h3>Mahalle öncelikleri</h3><div class="form-grid" id="areas"></div>
 <h3>İlçe ekle</h3><div class="form-grid"><div><label>İlçe adı</label><input id="dn" placeholder="Örn. Beşiktaş"></div><div><label>Öncelik</label><select id="dt"><option value="1">1. öncelik</option><option value="2" selected>2. öncelik</option><option value="3">3. öncelik</option></select></div><div style="align-self:end"><button class="btn" style="width:100%" onclick="addD()">İlçe ekle</button></div></div><div id="dl"></div>
 <h3>Kaynak ekle</h3><div class="form-grid"><div><label>Kaynak türü</label><select id="st"><option value="site">Emlak sitesi</option><option value="tg">Telegram kanalı</option></select></div><div><label>Kaynak adı</label><input id="sn" placeholder="Zingat"></div><div><label>Arama bağlantısı / kanal adı</label><input id="su" placeholder="https://… veya kanal adı"></div></div><div style="margin-top:10px"><button class="btn" onclick="addS()">Kaynak ekle</button></div><div id="sl"></div>
-<h3>GitHub bağlantısı</h3><div class="token-grid"><div><label>GitHub token</label><input id="tok" type="password" autocomplete="off"></div><div><label>Repo (kullanıcı/repo)</label><input id="repo"></div></div><div class="save-row"><button class="btn" onclick="save()">Ayarları kaydet</button></div></div></details></section>
+<h3>GitHub bağlantısı</h3><div class="token-grid"><div><label>GitHub token</label><input id="tok" type="password" autocomplete="off"><div class="found">Durdur butonu için token Actions okuma/yazma iznine sahip olmalı.</div></div><div><label>Repo (kullanıcı/repo)</label><input id="repo"></div></div><div class="save-row"><button class="btn" onclick="save()">Ayarları kaydet</button></div></div></details></section>
 </main><script>
 const $=id=>document.getElementById(id),fold=s=>s.replace(/İ/g,"i").replace(/I/g,"ı").toLowerCase().replace(/ç/g,"c").replace(/ş/g,"s").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ü/g,"u");
 const NUM=["budget_max","min_rooms","min_sqm","max_building_age","frequency_minutes","send_min_score"],CHK=["allow_furnished","attic_needs_elevator","notify"],WORDS=["exclude_words","prefer_words"],DEF={allow_furnished:false,attic_needs_elevator:true,notify:true};
@@ -91,7 +91,7 @@ async function run(){
  const t0=Date.now()-20000,r=await gh("actions/workflows/agent.yml/dispatches",{method:"POST",body:JSON.stringify({ref:"main"})});
  if(!r.ok){setScanUI(false);msg("❌ Tarama başlatılamadı: "+r.status+" — GitHub token Actions yetkisini kontrol et.");return}
  msg("▶️ Tarama kuyruğa alındı. Çalışma durumu canlı izleniyor…");
- for(let i=0;i<90;i++){
+ for(let i=0;i<240;i++){
   await new Promise(x=>setTimeout(x,5000));
   if(stopRequested)return;
   const g=await gh("actions/workflows/agent.yml/runs?per_page=5&event=workflow_dispatch");if(!g.ok)continue;
