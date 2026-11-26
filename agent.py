@@ -28,15 +28,8 @@ def load_cfg():
         st = json.load(open(SETTINGS, encoding="utf-8"))
         for k in ("budget_max", "min_rooms", "allow_furnished", "max_building_age", "attic_needs_elevator",
                   "send_min_score", "digest_min_score", "frequency_minutes", "min_sqm", "notify",
-                  "exclude_words", "prefer_words", "rescan_id"):
+                  "exclude_words", "prefer_words", "rescan_id", "locations"):
             if k in st: cfg[k] = st[k]
-        amap = {al: t for t, v in cfg["tiers"].items() for al in v["aliases"]}
-        amap.update(st.get("areas", {}))
-        for d in st.get("districts", []):
-            amap[d["alias"]] = d.get("tier", 2)
-            cfg["sources"].append({"name": "Emlakjet " + d["label"], "type": "listing_site",
-                "url": "https://www.emlakjet.com/kiralik-daire/istanbul-" + d["slug"] + "?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}",
-                "link_pattern": "/ilan/", "base": "https://www.emlakjet.com"})
         from urllib.parse import urlparse
         for c in st.get("custom_sources", []):
             if c.get("type") == "tg":
@@ -45,7 +38,6 @@ def load_cfg():
                 u = urlparse(c["url"])
                 cfg["sources"].append({"name": c["name"], "type": "listing_site", "url": c["url"],
                                        "link_pattern": "auto", "base": f"{u.scheme}://{u.netloc}"})
-        for t in cfg["tiers"]: cfg["tiers"][t]["aliases"] = [a for a, x in amap.items() if int(x) == int(t)]
     return cfg
 
 # ---------- KAYNAKLAR ----------
@@ -123,26 +115,18 @@ def score(item, cfg):
     for w in cfg.get("exclude_words", []):
         if fold(w) in t: return None
     pts += min(15, 5 * sum(1 for w in cfg.get("prefer_words", []) if fold(w) in t))
-    loc = fold(item["loc"]) if item.get("loc") else t
-    # --- mahalle ---
-    tier_hit = None
-    for tier in sorted(cfg["tiers"]):
-        for al in cfg["tiers"][tier]["aliases"]:
-            if al in loc:
-                tier_hit = (tier, al); break
-        if tier_hit: break
-    if not tier_hit: return None
-    tier, alias = tier_hit
-    pts += cfg["tiers"][tier]["points"]
-    notes.append(f"📍 Bölge önceliği: {tier}. kademe ({alias})")
-    for key, rule in cfg.get("conditional", {}).items():
-        if key in t and not any(n in t for n in rule["need"]):
-            pts -= rule["penalty"]
-            notes.append(f"⚠️ {key}: ana cadde/sanayi yakınlığı ilanda doğrulanamadı")
-        elif key in t:
-            pts += 10; notes.append(f"✅ {key}: yakınlık ifadesi var")
-    if tier == 1 and re.search(r"metro|metrobus|ana cadde|ulasim", t):
-        pts += 8; notes.append("🚇 Ulaşım vurgusu var")
+    loc = fold(item.get("loc") or t)
+    selected = cfg.get("locations", {})
+    city = fold(str(selected.get("city", "")).strip())
+    districts = [fold(x.strip()) for x in selected.get("districts", []) if str(x).strip()]
+    neighborhoods = [fold(x.strip()) for x in selected.get("neighborhoods", []) if str(x).strip()]
+    if city and city not in loc: return None
+    if districts and not any(x in loc for x in districts): return None
+    if neighborhoods and not any(x in loc for x in neighborhoods): return None
+    if not city and not districts and not neighborhoods: return None
+    pts += 40
+    chosen = [x for x in [city, *districts, *neighborhoods] if x and x in loc]
+    notes.append("📍 Seçilen konum: " + ", ".join(chosen))
 
     # --- fiyat ---
     if price:
@@ -162,7 +146,7 @@ def score(item, cfg):
     if elevator: pts += 5; notes.append("🛗 Asansör var")
     if attic: notes.append("🏠 Çatı katı (asansör var)")
     if item.get("verified"): notes.append("🔎 Detay sayfasından doğrulandı")
-    return min(pts, 100), notes, {"price": price, "rooms": rooms, "age": age, "tier": tier, "sqm": sqm}
+    return min(pts, 100), notes, {"price": price, "rooms": rooms, "age": age, "sqm": sqm}
 
 # ---------- DETAY SAYFASI ----------
 def parse_detail(raw):
