@@ -2,7 +2,7 @@
 <style>
 :root{--bg:#f5f6f8;--surface:#fff;--surface2:#f0f3f6;--ink:#17212b;--muted:#718096;--line:#e3e8ee;--brand:#176b55;--brand2:#e5f4ee;--shadow:0 8px 30px rgba(20,35,50,.06)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,sans-serif}button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28px 24px 64px}
-.hero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 26px;background:#132d2a;color:#fff;border-radius:20px;box-shadow:var(--shadow)}.brand{display:flex;align-items:center;gap:14px}.logo{width:48px;height:48px;border-radius:15px;background:#d5f0e5;color:#145c48;display:grid;place-items:center;font-size:25px}.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#a8cfc0;font-weight:700}.hero h1{font-size:25px;line-height:1.2;margin:3px 0 4px}.hero p{margin:0;color:#c2d8d0;font-size:13px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid transparent;border-radius:10px;padding:10px 15px;font-weight:650;background:#d5f0e5;color:#174f40;cursor:pointer}.btn.secondary{background:transparent;border-color:#52736a;color:#fff}.btn:hover{filter:brightness(.97)}
+.hero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 26px;background:#132d2a;color:#fff;border-radius:20px;box-shadow:var(--shadow)}.brand{display:flex;align-items:center;gap:14px}.logo{width:48px;height:48px;border-radius:15px;background:#d5f0e5;color:#145c48;display:grid;place-items:center;font-size:25px}.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#a8cfc0;font-weight:700}.hero h1{font-size:25px;line-height:1.2;margin:3px 0 4px}.hero p{margin:0;color:#c2d8d0;font-size:13px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid transparent;border-radius:10px;padding:10px 15px;font-weight:650;background:#d5f0e5;color:#174f40;cursor:pointer}.btn.secondary{background:transparent;border-color:#52736a;color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.btn:hover{filter:brightness(.97)}
 .statusline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:13px 4px 18px;color:var(--muted);font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:#22a06b;display:inline-block}.section{margin-top:24px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:12px}.section-head h2{font-size:17px;margin:0}.section-head p{margin:3px 0 0;color:var(--muted);font-size:12px}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric,.panel,.listing,.settings-wrap{background:var(--surface);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}.metric{padding:17px 18px}.metric b{display:block;font-size:25px;letter-spacing:-.04em;line-height:1.2}.metric span{display:block;color:var(--muted);font-size:12px;margin-top:6px}.metric .metric-mark{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--brand);font-weight:750;margin-bottom:9px}
 .insights{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px}.panel{padding:17px 18px;min-width:0}.panel h3{margin:0 0 12px;font-size:13px}.row{display:flex;align-items:center;gap:9px;margin:9px 0;color:var(--muted);font-size:12px}.row span:first-child{width:94px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row span:last-child{width:22px;text-align:right;color:var(--ink);font-weight:650}.bar{height:7px;max-width:100%;background:linear-gradient(90deg,#176b55,#68b69a);border-radius:99px}.insight-note{margin:12px 0 0;padding:12px 14px;background:var(--brand2);border-radius:11px;color:#245b49;font-size:12px}
@@ -12,7 +12,7 @@
 @media(max-width:850px){.kpis{grid-template-columns:repeat(2,1fr)}.insights{grid-template-columns:1fr 1fr}.insights .panel:first-child{grid-column:1/-1}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.filters>div:first-child{grid-column:1/-1}}
 @media(max-width:600px){.shell{padding:14px 12px 40px}.hero{align-items:flex-start;flex-direction:column;padding:19px}.hero h1{font-size:22px}.actions{width:100%}.actions .btn{flex:1}.kpis{gap:8px}.metric{padding:13px}.metric b{font-size:21px}.insights{grid-template-columns:1fr}.insights .panel:first-child{grid-column:auto}.filters{grid-template-columns:1fr 1fr;padding:11px}.filters>div:first-child{grid-column:1/-1}#top{grid-template-columns:1fr}.form-grid,.token-grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}}
 </style></head><body><main class="shell">
-<header class="hero"><div class="brand"><div class="logo">⌂</div><div><div class="eyebrow">Akıllı konut arama asistanı</div><h1>Kira Agent</h1><p>İlanları tara, kriterlerine göre puanla, fırsatları kaçırma.</p></div></div><div class="actions"><button class="btn" onclick="run()">↻ Şimdi tara</button><button class="btn secondary" onclick="rescan()" title="Daha önce görülen ilanlar dahil yeniden değerlendirir">Tümünü yeniden tara</button></div></header>
+<header class="hero"><div class="brand"><div class="logo">⌂</div><div><div class="eyebrow">Akıllı konut arama asistanı</div><h1>Kira Agent</h1><p>İlanları tara, kriterlerine göre puanla, fırsatları kaçırma.</p></div></div><div class="actions"><button class="btn" id="scanBtn" onclick="run()">▶ Tara</button><button class="btn secondary" id="stopBtn" onclick="stopScan()" disabled>■ Durdur</button><button class="btn secondary" onclick="rescan()" title="Daha önce görülen ilanlar dahil yeniden değerlendirir">Tümünü yeniden tara</button></div></header>
 <div class="statusline"><span class="dot"></span><span>Otomatik tarama aktif</span><span>·</span><span id="upd">Son tarama yükleniyor…</span><span id="errs"></span></div><div id="msg" aria-live="polite"></div>
 <section class="section"><div class="section-head"><div><h2>Genel görünüm</h2><p>Bulunan ilanların hızlı özeti</p></div></div><div class="kpis" id="kpi"></div></section>
 <section class="section"><div class="section-head"><div><h2>Analiz</h2><p>Bölge, kira ve ilan kaynağı dağılımı</p></div></div><div class="insights"><div class="panel"><h3>Bölge önceliği</h3><div id="byTier"></div></div><div class="panel"><h3>Kira dağılımı</h3><div id="byPrice"></div></div><div class="panel"><h3>İlan kaynakları</h3><div id="bySrc"></div></div></div><p id="insight" class="insight-note"></p></section>
@@ -31,7 +31,7 @@
 const $=id=>document.getElementById(id),fold=s=>s.replace(/İ/g,"i").replace(/I/g,"ı").toLowerCase().replace(/ç/g,"c").replace(/ş/g,"s").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ü/g,"u");
 const NUM=["budget_max","min_rooms","min_sqm","max_building_age","frequency_minutes","send_min_score"],CHK=["allow_furnished","attic_needs_elevator","notify"],WORDS=["exclude_words","prefer_words"],DEF={allow_furnished:false,attic_needs_elevator:true,notify:true};
 const AREAS="sanayi mah:Sanayi:1,emniyet evleri:Emniyet Evleri:1,yesilce:Yeşilce:1,sirintepe:Şirintepe:1,celiktepe:Çeliktepe:2,gultepe:Gültepe:2,gursel:Gürsel:2,harmantepe:Harmantepe:2,hamidiye:Hamidiye:2,hurriyet:Hürriyet:2,merkez mah:Merkez:2,mimar sinan:Mimar Sinan:2,nurtepe:Nurtepe:2,ortabayir:Ortabayır:2,talatpasa:Talatpaşa:2,seyrantepe:Seyrantepe:2,caglayan:Çağlayan:2,yahya kemal:Yahya Kemal:2,telsizler:Telsizler:2,sisli:Şişli:3".split(",").map(x=>x.split(":"));
-let S={},D=[],CS=[],ALL=[];
+let S={},D=[],CS=[],ALL=[],activeRunId=null,scanBusy=false,stopRequested=false;
 const tl=n=>n?n.toLocaleString("tr-TR")+" ₺":"?",msg=t=>$("msg").textContent=t,med=a=>{a=a.filter(Boolean).sort((x,y)=>x-y);return a.length?a[a.length>>1]:0};
 $("tok").value=localStorage.tok||"";
 $("repo").value=localStorage.repo||(location.hostname.endsWith("github.io")?location.hostname.split(".")[0]+"/"+location.pathname.split("/")[1]:"");
@@ -83,15 +83,43 @@ async function save(){
  const r=await gh("contents/docs/settings.json",{method:"PUT",body:JSON.stringify({message:"ayarlar",sha,content:btoa(unescape(encodeURIComponent(JSON.stringify(s,null,1))))})});
  if(r.ok)S=s;msg(r.ok?"✅ Kaydedildi. Bir sonraki taramada geçerli olur.":"❌ Hata: "+r.status+" (token/repo yetkisini kontrol et)");return r.ok}
 async function rescan(){S.rescan_id=Date.now();if(await save())run()}
+function setScanUI(on){scanBusy=on;$("scanBtn").disabled=on;$("stopBtn").disabled=!on;$("scanBtn").textContent=on?"⏳ Taranıyor…":"▶ Tara"}
 async function run(){
- if(!location.hostname.endsWith("github.io")){const r=await fetch("/api/scan",{method:"POST"});if(!r.ok){msg("❌ Tarama başlatılamadı: "+r.status);return}msg("▶️ Sunucuda tarama kuyruğa alındı.");setTimeout(loadRes,5000);return}
+ if(scanBusy)return;
+ if(!location.hostname.endsWith("github.io")){const r=await fetch("/api/scan",{method:"POST"});if(!r.ok){msg("❌ Tarama başlatılamadı: "+r.status);return}msg("▶️ Sunucuda tarama kuyruğa alındı.");return}
+ stopRequested=false;activeRunId=null;setScanUI(true);
  const t0=Date.now()-20000,r=await gh("actions/workflows/agent.yml/dispatches",{method:"POST",body:JSON.stringify({ref:"main"})});
- if(!r.ok){msg("❌ Hata: "+r.status);return}
- msg("▶️ Tarama başlatıldı…");
- for(let i=0;i<30;i++){await new Promise(x=>setTimeout(x,8000));
-  const g=await gh("actions/workflows/agent.yml/runs?per_page=1&event=workflow_dispatch");if(!g.ok)continue;
-  const j=(await g.json()).workflow_runs?.[0];
-  if(j&&Date.parse(j.created_at)>=t0){if(j.status=="completed"){msg(j.conclusion=="success"?"✅ Tarama bitti, sonuçlar yüklendi.":"⚠️ Tarama hata verdi: "+j.conclusion);loadRes();return}msg("⏳ Çalışıyor…")}}
- msg("⏳ Hâlâ sürüyor, birazdan sayfayı yenile.")}
+ if(!r.ok){setScanUI(false);msg("❌ Tarama başlatılamadı: "+r.status+" — GitHub token Actions yetkisini kontrol et.");return}
+ msg("▶️ Tarama kuyruğa alındı. Çalışma durumu canlı izleniyor…");
+ for(let i=0;i<90;i++){
+  await new Promise(x=>setTimeout(x,5000));
+  if(stopRequested)return;
+  const g=await gh("actions/workflows/agent.yml/runs?per_page=5&event=workflow_dispatch");if(!g.ok)continue;
+  const runs=(await g.json()).workflow_runs||[];
+  const j=activeRunId?runs.find(x=>x.id===activeRunId):runs.find(x=>Date.parse(x.created_at)>=t0);
+  if(!j)continue;
+  activeRunId=j.id;
+  if(j.status==="completed"){
+   setScanUI(false);activeRunId=null;
+   msg(j.conclusion==="success"?"✅ Tarama tamamlandı. Sonuçlar yenileniyor.":"⚠️ Tarama tamamlandı: "+j.conclusion);
+   await loadRes();return;
+  }
+  msg(j.status==="queued"?"⌛ Tarama sırada bekliyor…":"⏳ Canlı tarama çalışıyor · "+(j.run_number?"Çalışma #"+j.run_number:""));
+ }
+ setScanUI(false);msg("ℹ️ Tarama hâlâ sürüyor olabilir. Durumu kontrol etmek için yeniden yükleyebilirsin.");
+}
+async function stopScan(){
+ if(!location.hostname.endsWith("github.io")){msg("ℹ️ Sunucu modunda durdurma uç noktası henüz etkin değil.");return}
+ $("stopBtn").disabled=true;msg("Durdurma isteği gönderiliyor…");
+ let id=activeRunId;
+ if(!id){
+  const q=await gh("actions/workflows/agent.yml/runs?per_page=5&event=workflow_dispatch");
+  if(q.ok){const runs=(await q.json()).workflow_runs||[];const active=runs.find(x=>x.status==="in_progress"||x.status==="queued");if(active)id=active.id}
+ }
+ if(!id){setScanUI(false);msg("Aktif manuel tarama bulunamadı.");return}
+ const r=await gh("actions/runs/"+id+"/cancel",{method:"POST"});
+ if(r.status===202||r.status===200){stopRequested=true;activeRunId=null;setScanUI(false);msg("■ Durdurma isteği kabul edildi. GitHub işlemi iptal ediyor.");}
+ else{$("stopBtn").disabled=false;msg("❌ Durdurma başarısız: "+r.status+" — token için Actions: write yetkisi gerekli.");}
+}
 load();
 </script></body></html>
