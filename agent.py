@@ -78,7 +78,56 @@ def fetch_telegram_channel(src):
                         "text": t.get_text(" ", strip=True)})
     return out
 
-FETCHERS = {"listing_site": fetch_listing_site, "telegram_channel": fetch_telegram_channel}
+def fetch_public_api(src):
+    """Read the provider's public, read-only listings API; no scraping or paid key."""
+    endpoint = src.get("url", "https://api.kiralikev.net/v1/public/listings")
+    response = requests.get(endpoint, headers={"Accept": "application/json", **UA}, timeout=30)
+    response.raise_for_status()
+    payload = response.json()
+
+    def find_rows(value):
+        if isinstance(value, list):
+            if value and all(isinstance(x, dict) for x in value):
+                return value
+            for child in value:
+                rows = find_rows(child)
+                if rows: return rows
+        elif isinstance(value, dict):
+            for key in ("items", "listings", "results", "data", "records"):
+                if key in value:
+                    rows = find_rows(value[key])
+                    if rows: return rows
+            # Some APIs return a single listing object at the root.
+            if any(k in value for k in ("url", "listing_url", "permalink")):
+                return [value]
+        return []
+
+    rows = find_rows(payload)
+    out = []
+    for row in rows:
+        url = row.get("url") or row.get("listing_url") or row.get("permalink") or row.get("link")
+        if not url: continue
+        if str(url).startswith("/"):
+            url = "https://kiralikev.net" + str(url)
+        if not str(url).startswith("http"): continue
+        title = row.get("title") or row.get("name") or row.get("headline") or ""
+        description = row.get("description") or row.get("summary") or ""
+        city = row.get("city") or row.get("province") or row.get("il") or ""
+        district = row.get("district") or row.get("county") or row.get("ilce") or ""
+        neighborhood = row.get("neighborhood") or row.get("quarter") or row.get("mahalle") or ""
+        price = row.get("price") or row.get("rent") or row.get("monthly_price") or ""
+        rooms = row.get("rooms") or row.get("room_count") or row.get("room_type") or ""
+        area = row.get("area") or row.get("sqm") or row.get("size") or ""
+        age = row.get("building_age") or row.get("age") or ""
+        loc = " ".join(str(x) for x in (city, district, neighborhood) if x)
+        text = " | ".join(str(x) for x in (title, description, price, rooms, area, age, loc) if x)
+        out.append({"source": src.get("name", "KiralıkEv API"), "url": str(url),
+                    "text": text, "loc": loc or None})
+    print(f"{src.get('name', 'Public API')}: {len(out)} ilan (API)")
+    return out
+
+
+FETCHERS = {"listing_site": fetch_listing_site, "telegram_channel": fetch_telegram_channel, "public_api": fetch_public_api}
 
 # ---------- ANALİZ ----------
 def parse(text):
