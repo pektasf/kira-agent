@@ -7,7 +7,7 @@ attic_needs_elevator: true # çatı katıysa asansör şart (bebek)
 
 # ---- RAPORLAMA ----
 send_min_score: 60         # bu puan ve üstü: tek tek detaylı mesaj
-digest_min_score: 40       # 40-59 arası: tek özet mesajında
+digest_min_score: 30        # bu puan ile send_min_score arası: tek özet mesajında
 
 # ---- MAHALLE ÖNCELİKLERİ (alias'lar sadeleştirilmiş: küçük harf, Türkçe karaktersiz) ----
 tiers:
