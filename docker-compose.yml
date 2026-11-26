@@ -1,0 +1,23 @@
+services:
+  kira-agent:
+    build: .
+    container_name: kira-agent
+    restart: unless-stopped
+    ports:
+      - "${KIRA_PORT:-8000}:8000"
+    env_file:
+      - .env
+    environment:
+      KIRA_DATA_DIR: /data
+      TZ: Europe/Istanbul
+    volumes:
+      - kira_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  kira_data:
