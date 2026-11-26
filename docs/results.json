@@ -1,10 +1,477 @@
 {
- "updated": "2026-11-26T19:45Z",
+ "updated": "2026-11-26T20:08Z",
  "errors": [
-  "Hepsiemlak: 403 Client Error: Forbidden for url: https://www.hepsiemlak.com/kagithane-kiralik/daire",
-  "Sahibinden: 403 Client Error: Forbidden for url: https://www.sahibinden.com/kiralik-daire/istanbul-kagithane"
+  "Emlakjet Sanayi: 404 Client Error: Not Found for url: https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-sanayi-mahallesi?filtreler=max-fiyat=40000&oda-sayisi=2-1,3-1,4-1,5-1"
  ],
+ "rescan_done": "",
  "items": [
+  {
+   "score": 50,
+   "url": "https://www.emlakjet.com/ilan/emniyetevlerin-de-4-levent-metroya-3-dk-21-kiralik-daire-19902681",
+   "source": "Emlakjet Emniyet Evleri",
+   "notes": [
+    "📍 Bölge önceliği: 1. kademe (emniyet evleri)",
+    "🚇 Ulaşım vurgusu var",
+    "💰 37.500 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 37500,
+   "rooms": 2,
+   "age": null,
+   "tier": 1,
+   "sqm": 90
+  },
+  {
+   "score": 46,
+   "url": "https://www.emlakjet.com/ilan/sanayi-mah-merkezde-21-balkonlu-daire-20045114",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 1. kademe (sanayi mah)",
+    "💰 32.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 32000,
+   "rooms": 2,
+   "age": null,
+   "tier": 1,
+   "sqm": 80
+  },
+  {
+   "score": 34,
+   "url": "https://www.emlakjet.com/ilan/garanti-hd-group-tan-cadde-uzerinde-kiralik-daire-20078208",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (kagithane)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 3,
+   "age": null,
+   "tier": 2,
+   "sqm": 120
+  },
+  {
+   "score": 33,
+   "url": "https://www.emlakjet.com/ilan/dairemiz-21-caglayan-dere-de-onderler-ilk-ogretim-okulu-nun-ustu-tarafinda-dir-kapali-terasi-20103733",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (caglayan)",
+    "💰 30.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 30000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 130
+  },
+  {
+   "score": 33,
+   "url": "https://www.emlakjet.com/ilan/kagithane-celiktepe-kiralik-daire-20108926",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (celiktepe)",
+    "💰 30.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 30000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 80
+  },
+  {
+   "score": 33,
+   "url": "https://www.emlakjet.com/ilan/seyrantepe-metroya-5-dk-yurume-mesafesinde-bahce-kullanimli-41-20099855",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (seyrantepe)",
+    "💰 36.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 36000,
+   "rooms": 4,
+   "age": null,
+   "tier": 2,
+   "sqm": 130
+  },
+  {
+   "score": 31,
+   "url": "https://www.emlakjet.com/ilan/kiralik-21-daire-kagithane-t-pasa-mah-gulbeyli-sok-20082665",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (talatpasa)",
+    "💰 32.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 32000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 85
+  },
+  {
+   "score": 30,
+   "url": "https://www.emlakjet.com/ilan/kagithane-merkez-de-metroya-10-dk-21-110-m-2-balkonlu-kirali-20104272",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (merkez mah)",
+    "💰 33.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 33000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 110
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/gultepede-kiralik-20084465",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (gultepe)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 90
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/gultepe-telsizler-mah-kiralik-21-daire-19969296",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (gultepe)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 85
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/metronun-hemen-yani-basinda-21-85m2-kiralik-daire-19962086",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (merkez mah)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 85
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/kagithane-ortabayir-ulasimin-hemen-yaninda-20041455",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (ortabayir)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 110
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/ilka-dan-sadabad-sitesi-nde-21-kiralik-daire-toplu-ulasima-1-dk-19961372",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (talatpasa)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 75
+  },
+  {
+   "score": 28,
+   "url": "https://www.emlakjet.com/ilan/kagithane-seyrantepe-metroya-5-dakika-yurume-mesafesi-21-85-m2-20107312",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (seyrantepe)",
+    "💰 36.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 36000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 85
+  },
+  {
+   "score": 27,
+   "url": "https://www.emlakjet.com/ilan/kagithane-sanayi-mahallesi-nde-kiralik-2-1-daire-20113434",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 1. kademe (sanayi mah)",
+    "⚠️ yesilce: ana cadde/sanayi yakınlığı ilanda doğrulanamadı",
+    "💰 37.500 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 37500,
+   "rooms": 2,
+   "age": null,
+   "tier": 1,
+   "sqm": 95
+  },
+  {
+   "score": 26,
+   "url": "https://www.emlakjet.com/ilan/metrobuse-15-dk-mesafede-sislide-21-daire-20122102",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 25.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 25000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 95
+  },
+  {
+   "score": 26,
+   "url": "https://www.emlakjet.com/ilan/mehmethan-emlak-tan-21-kombili-masrafsiz-kullanisli-hesapli-20044893",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 25.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 25000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 80
+  },
+  {
+   "score": 25,
+   "url": "https://www.emlakjet.com/ilan/kagithane-caglayan-mah-oturmaya-hazir-21-mukemmel-konumda-daire-19998380",
+   "source": "Emlakjet Kağıthane",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (hurriyet)",
+    "💰 40.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 40000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2,
+   "sqm": 85
+  },
+  {
+   "score": 24,
+   "url": "https://www.emlakjet.com/ilan/31-kiralik-daire-merkezi-konum-20120823",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 3,
+   "age": null,
+   "tier": 3,
+   "sqm": 120
+  },
+  {
+   "score": 23,
+   "url": "https://www.emlakjet.com/ilan/sisli-mecidiyekoy-gulbag-da-21-daire-guvercin-sokak-ta-20108485",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 29.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 29000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 90
+  },
+  {
+   "score": 23,
+   "url": "https://www.emlakjet.com/ilan/kurtulus-ta-metroya-taksim-e-ulasima-yakin-20091801",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 30.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 30000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 90
+  },
+  {
+   "score": 21,
+   "url": "https://www.emlakjet.com/ilan/mecidiyekoy-de-temiz-ferah-21-arakat-daire-20098247",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 32.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 32000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 80
+  },
+  {
+   "score": 20,
+   "url": "https://www.emlakjet.com/ilan/halide-edip-adivar-mahallesi-nde-kiralik-asansorlu-daire-20096092",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 40.000 TL",
+    "🏢 Bina yaşı belirtilmemiş",
+    "🛗 Asansör var"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 40000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 85
+  },
+  {
+   "score": 20,
+   "url": "https://www.emlakjet.com/ilan/sisli-mecidiyekoy-gulbag-biberiye-sokak-ta-21-daire-19934691",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 33.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 33000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 85
+  },
+  {
+   "score": 19,
+   "url": "https://www.emlakjet.com/ilan/elmadag-sisli-caddeye-cok-yakin-kiralik-genis-yuksek-giris-19849599",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 75
+  },
+  {
+   "score": 18,
+   "url": "https://www.emlakjet.com/ilan/mecidiyekoy-de-kiralik-21-daire-merkezi-konum-20080267",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 36.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 36000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 85
+  },
+  {
+   "score": 17,
+   "url": "https://www.emlakjet.com/ilan/fl-emlaktan-mecidiyekoyde-21-kiralik-metrobuse-metroya-7-dakika-19787109",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 37.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 37000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 90
+  },
+  {
+   "score": 15,
+   "url": "https://www.emlakjet.com/ilan/sisli-kurtulus-ta-kiralik-21-daire-20137717",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 40.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 40000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 80
+  },
+  {
+   "score": 15,
+   "url": "https://www.emlakjet.com/ilan/gulbahar-caddesi-uzerinde-temiz-21-kiralik-daire-19993445",
+   "source": "Emlakjet Şişli",
+   "notes": [
+    "📍 Bölge önceliği: 3. kademe (sisli)",
+    "💰 40.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T20:08Z",
+   "price": 40000,
+   "rooms": 2,
+   "age": null,
+   "tier": 3,
+   "sqm": 90
+  },
   {
    "score": 41,
    "url": "https://www.emlakjet.com/ilan/okmeydani-ornektepe-metrobuse-10-dakika-yurume-mesafesi-20140282",
