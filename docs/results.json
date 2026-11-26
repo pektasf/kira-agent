@@ -1,1 +1,174 @@
-{"updated":null,"errors":[],"items":[]}
+{
+ "updated": "2026-11-26T19:45Z",
+ "errors": [
+  "Hepsiemlak: 403 Client Error: Forbidden for url: https://www.hepsiemlak.com/kagithane-kiralik/daire",
+  "Sahibinden: 403 Client Error: Forbidden for url: https://www.sahibinden.com/kiralik-daire/istanbul-kagithane"
+ ],
+ "items": [
+  {
+   "score": 41,
+   "url": "https://www.emlakjet.com/ilan/okmeydani-ornektepe-metrobuse-10-dakika-yurume-mesafesi-20140282",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (kagithane)",
+    "💰 25.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 25000,
+   "rooms": 3,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 41,
+   "url": "https://www.emlakjet.com/ilan/hurriyet-mahallesi-hira-sokak-da-erkek-kisiler-icin-ozel-odalar-mevcuttur-20134206",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (hurriyet)",
+    "💰 19.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 19000,
+   "rooms": null,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 37,
+   "url": "https://www.emlakjet.com/ilan/kagithane-hurriyet-mah-oturmaya-hazir-21-yeni-bina-20114045",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (hurriyet)",
+    "💰 38.000 TL",
+    "🏢 Bina yaşı: 0"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 38000,
+   "rooms": 2,
+   "age": 0,
+   "tier": 2
+  },
+  {
+   "score": 30,
+   "url": "https://www.emlakjet.com/ilan/garanti-hd-group-tan-4-levent-metroya-5-dk-20122424",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (kagithane)",
+    "💰 40.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 40000,
+   "rooms": 3,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/ergun-durmus-tan-gultepe-rosehill-residence-20127748",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (gultepe)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/garanti-hd-group-tan-talatpasa-da-yenilenmis-cok-zevkli-cati-20119542",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (talatpasa)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 29,
+   "url": "https://www.emlakjet.com/ilan/caglayan-da-adliye-metro-metrobuse-10-dk-kiralik-21-daire-20114568",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (caglayan)",
+    "💰 35.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 35000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 27,
+   "url": "https://www.emlakjet.com/ilan/ege-emlaktan-kagithane-caglayan-mh-kiralik-21-daire-20141055",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (caglayan)",
+    "💰 37.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 37000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 27,
+   "url": "https://www.emlakjet.com/ilan/rd-den-seyrantepe-de-70-m-kapali-mutfak-21-kiralik-20116196",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (seyrantepe)",
+    "💰 37.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 37000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 25,
+   "url": "https://www.emlakjet.com/ilan/ilka-dan-dersaadet-caddesi-nde-21-kiralik-daire-kapali-balkonlu-20131058",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (talatpasa)",
+    "💰 40.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 40000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2
+  },
+  {
+   "score": 25,
+   "url": "https://www.emlakjet.com/ilan/ilka-dan-kagithane-de-kapali-mutfakli-terasli-2-kat-21-kiralik-20127326",
+   "source": "Emlakjet",
+   "notes": [
+    "📍 Bölge önceliği: 2. kademe (talatpasa)",
+    "💰 40.000 TL",
+    "🏢 Bina yaşı belirtilmemiş"
+   ],
+   "found": "2026-11-26T19:45Z",
+   "price": 40000,
+   "rooms": 2,
+   "age": null,
+   "tier": 2
+  }
+ ]
+}
