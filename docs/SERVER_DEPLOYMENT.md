@@ -10,10 +10,15 @@ Kira Agent 2.0, Docker ile sürekli çalışan tek servis olarak dağıtılabili
 ## Kurulum
 1. Depoyu sunucuya klonlayın.
 2. `.env.example` dosyasını `.env` olarak kopyalayın.
-3. `.env` içine Telegram bilgilerini girin.
+3. `.env` içine Telegram bilgilerini girin ve benzersiz, uzun bir `KIRA_ADMIN_PASSWORD` belirleyin. `KIRA_ADMIN_USER` ve `KIRA_ADMIN_PASSWORD` olmadan panel/API (sağlık kontrolü hariç) erişime açılmaz; tarayıcı giriş penceresi gösterir.
 4. `docker compose up -d --build` komutunu çalıştırın.
 5. `http://SUNUCU_ADRESI:8000/api/health` adresinin `{"status":"ok"}` döndürdüğünü kontrol edin.
 6. Web panelini `http://SUNUCU_ADRESI:8000` adresinden açın.
+
+## Güvenlik
+- Panel ve API HTTP Basic Authentication ile korunur. `/api/health` yalnızca servis sağlık kontrolü için kimlik doğrulamasızdır.
+- İnternete açmadan önce HTTPS sağlayan bir ters proxy (Caddy/Nginx/Traefik) kullanın; 8000 portunu doğrudan internete açmak yerine proxy arkasında tutun.
+- `.env` dosyasını GitHub'a göndermeyin; parola ve Telegram token'ı sır olarak saklayın.
 
 ## Kalıcılık ve çalışma
 - `kira_data` Docker volume'u ayarları, sonuçları, görülen ilanları, son tarama zamanını ve tarama geçmişi SQLite veritabanını saklar.
