@@ -1,6 +1,9 @@
 """Kira Agent hosted service: API, scheduler and persistent storage."""
 from __future__ import annotations
 
+import base64
+import binascii
+import hmac
 import json
 import os
 import sqlite3
@@ -13,7 +16,7 @@ from typing import Any
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parent
@@ -154,6 +157,35 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="Kira Agent", version="2.0.0", lifespan=lifespan)
+
+
+def valid_basic_auth(header: str | None) -> bool:
+    username = os.environ.get("KIRA_ADMIN_USER", "")
+    password = os.environ.get("KIRA_ADMIN_PASSWORD", "")
+    if not username or not password or not header:
+        return False
+    try:
+        scheme, encoded = header.split(" ", 1)
+        if scheme.lower() != "basic":
+            return False
+        decoded = base64.b64decode(encoded, validate=True).decode("utf-8")
+        supplied_user, supplied_password = decoded.split(":", 1)
+    except (ValueError, UnicodeDecodeError, binascii.Error):
+        return False
+    return hmac.compare_digest(supplied_user, username) and hmac.compare_digest(supplied_password, password)
+
+
+@app.middleware("http")
+async def require_dashboard_login(request, call_next):
+    if request.url.path == "/api/health":
+        return await call_next(request)
+    if not valid_basic_auth(request.headers.get("authorization")):
+        return PlainTextResponse(
+            "Kimlik doğrulama gerekli. KIRA_ADMIN_USER ve KIRA_ADMIN_PASSWORD ayarlayın.",
+            status_code=401,
+            headers={"WWW-Authenticate": 'Basic realm="Kira Agent"'},
+        )
+    return await call_next(request)
 
 
 @app.get("/api/health")
