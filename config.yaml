@@ -1,81 +1,33 @@
-# ---- KRİTERLER ----
-budget_max: 40000          # aylık kira üst sınırı (TL)
-min_rooms: 2               # 2+1 ve üstü (soldaki sayı)
-allow_furnished: false     # eşyasız istiyorsun
-max_building_age: 20       # "çok yaşlı olmasın" -> 20 yıl varsayıldı, değiştirebilirsin
-attic_needs_elevator: true # çatı katıysa asansör şart (bebek)
+# ---- KİRA KRİTERLERİ ----
+budget_max: 40000
+min_rooms: 2
+allow_furnished: false
+max_building_age: 20
+attic_needs_elevator: true
+min_sqm: 0
 
-# ---- RAPORLAMA ----
-send_min_score: 60         # bu puan ve üstü: tek tek detaylı mesaj
-digest_min_score: 30        # bu puan ile send_min_score arası: tek özet mesajında
+# ---- BİLDİRİMLER ----
+send_min_score: 60
+digest_min_score: 30
+frequency_minutes: 60
+notify: true
 
-# ---- MAHALLE ÖNCELİKLERİ (alias'lar sadeleştirilmiş: küçük harf, Türkçe karaktersiz) ----
-tiers:
-  1:   # ana hedef
-    points: 40
-    aliases: ["sanayi mah", "emniyet evleri", "yesilce", "sirintepe"]
-  2:   # Kağıthane'nin diğer mahalleleri
-    points: 25
-    aliases: ["celiktepe", "gultepe", "gursel", "harmantepe", "hamidiye", "hurriyet",
-              "merkez mah", "mimar sinan", "nurtepe", "ortabayir", "talatpasa",
-              "seyrantepe", "caglayan", "yahya kemal", "telsizler", "fahri koruturk", "kagithane"]
-  3:   # Şişli
-    points: 15
-    aliases: ["sisli"]
+# ---- KONUM ----
+# Şehir / ilçe / mahalle seçimleri arayüzden yapılır.
+locations:
+  city: ""
+  districts: []
+  neighborhoods: []
 
-# Mahalleye özel şartlar (ilan metninde geçmiyorsa puan kırılır)
-conditional:
-  yesilce:   {need: ["cadde", "ana cadde", "metro"], penalty: 15}
-  sirintepe: {need: ["sanayi"], penalty: 15}
-
-# ---- KAYNAKLAR ----
-# type: listing_site -> sitede kendi filtreni uygula, çıkan arama sonucu URL'sini yapıştır
-# type: telegram_channel -> herkese açık kanal (t.me/s/KANALADI)
+# ---- ÜCRETSİZ KAYNAKLAR ----
+# KiralıkEv'in herkese açık, salt okunur JSON API'si.
+# Emlakjet gibi otomatik bot erişimini yasaklayan siteler varsayılan kaynak değildir.
 sources:
-  - name: Emlakjet Kağıthane
-    type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
-    link_pattern: "/ilan/"
-    base: "https://www.emlakjet.com"
-  - name: Emlakjet Şişli
-    type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-sisli?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
-    link_pattern: "/ilan/"
-    base: "https://www.emlakjet.com"
-  - name: Emlakjet Emniyet Evleri
-    type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-emniyet-evleri-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
-    link_pattern: "/ilan/"
-    base: "https://www.emlakjet.com"
-  - name: Emlakjet Sanayi
-    type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-sanayi-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
-    link_pattern: "/ilan/"
-    base: "https://www.emlakjet.com"
-  - name: Emlakjet Yeşilce
-    type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-yesilce-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
-    link_pattern: "/ilan/"
-    base: "https://www.emlakjet.com"
-  - name: Emlakjet Şirintepe
-    type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-sirintepe-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
-    link_pattern: "/ilan/"
-    base: "https://www.emlakjet.com"
+  - name: KiralıkEv (ücretsiz açık API)
+    type: public_api
+    url: "https://api.kiralikev.net/v1/public/listings"
 
-  # GitHub sunucularından 403 veriyor; ev bilgisayarında çalıştırınca açılabilir:
-  # - name: Hepsiemlak
-  #   type: listing_site
-  #   url: "https://www.hepsiemlak.com/kagithane-kiralik/daire"
-  #   link_pattern: "/(kagithane|sisli)[^\"]*-\\d+"
-  #   base: "https://www.hepsiemlak.com"
-  # - name: Sahibinden
-  #   type: listing_site
-  #   url: "https://www.sahibinden.com/kiralik-daire/istanbul-kagithane"
-  #   link_pattern: "/ilan/"
-  #   base: "https://www.sahibinden.com"
-
-  # Telegram kanalı eklemek için (kanal adını @ olmadan yaz):
-  # - name: Örnek Telegram kanalı
-  #   type: telegram_channel
-  #   channel: "KANAL_ADI"
+# Kullanıcı tarafından eklenen herkese açık Telegram kanalları da ayarlardan eklenebilir.
+exclude_words: []
+prefer_words: []
+detail_limit: 25
