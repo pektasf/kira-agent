@@ -31,6 +31,14 @@ def load_cfg():
             cfg["sources"].append({"name": "Emlakjet " + d["label"], "type": "listing_site",
                 "url": "https://www.emlakjet.com/kiralik-daire/istanbul-" + d["slug"] + "?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}",
                 "link_pattern": "/ilan/", "base": "https://www.emlakjet.com"})
+        from urllib.parse import urlparse
+        for c in st.get("custom_sources", []):
+            if c.get("type") == "tg":
+                cfg["sources"].append({"name": "TG " + c["name"], "type": "telegram_channel", "channel": c["url"]})
+            else:
+                u = urlparse(c["url"])
+                cfg["sources"].append({"name": c["name"], "type": "listing_site", "url": c["url"],
+                                       "link_pattern": "auto", "base": f"{u.scheme}://{u.netloc}"})
         for t in cfg["tiers"]: cfg["tiers"][t]["aliases"] = [a for a, x in amap.items() if int(x) == int(t)]
     return cfg
 
@@ -41,7 +49,8 @@ def fetch_listing_site(src):
     soup = BeautifulSoup(r.text, "html.parser")
     out, seen = [], set()
     for a in soup.find_all("a", href=True):
-        if not re.search(src["link_pattern"], a["href"]):
+        pat = r"\d{5,}|/ilan" if src["link_pattern"] == "auto" else src["link_pattern"]
+        if a["href"].startswith(("javascript", "tel:", "mailto")) or not re.search(pat, a["href"]):
             continue
         link = a["href"] if a["href"].startswith("http") else src["base"] + a["href"]
         if link in seen:
@@ -91,7 +100,7 @@ def parse(text):
 def score(item, cfg):
     t, price, rooms, age = parse(item["text"])
     notes, pts = [], 0
-    if re.search(r"paylasimli|\byurt\b|ogrenci|erkek|bayan|ozel oda|odalar mevcut|gunluk|devren|ortak mutfak|ortak oda", t): return None
+    if re.search(r"paylasimli|bodrum kat|\byurt\b|ogrenci|erkek|bayan|ozel oda|odalar mevcut|gunluk|devren|ortak mutfak|ortak oda", t): return None
 
     # --- eleme kuralları ---
     if price and price > cfg["budget_max"]: return None
@@ -108,11 +117,12 @@ def score(item, cfg):
     for w in cfg.get("exclude_words", []):
         if fold(w) in t: return None
     pts += min(15, 5 * sum(1 for w in cfg.get("prefer_words", []) if fold(w) in t))
+    loc = fold(item["loc"]) if item.get("loc") else t
     # --- mahalle ---
     tier_hit = None
     for tier in sorted(cfg["tiers"]):
         for al in cfg["tiers"][tier]["aliases"]:
-            if al in t:
+            if al in loc:
                 tier_hit = (tier, al); break
         if tier_hit: break
     if not tier_hit: return None
@@ -145,7 +155,39 @@ def score(item, cfg):
         notes.append("🏢 Bina yaşı belirtilmemiş")
     if elevator: pts += 5; notes.append("🛗 Asansör var")
     if attic: notes.append("🏠 Çatı katı (asansör var)")
+    if item.get("verified"): notes.append("🔎 Detay sayfasından doğrulandı")
     return min(pts, 100), notes, {"price": price, "rooms": rooms, "age": age, "tier": tier, "sqm": sqm}
+
+# ---------- DETAY SAYFASI ----------
+def parse_detail(raw):
+    t = fold(raw)
+    extra, loc = [], None
+    m = re.search(r"([^,]{3,60}mahallesi),\s*([^,]{3,20}),\s*istanbul\s*-?\s*haritada gor", t)
+    if m: loc = " ".join(m.group(1).split()[-3:]) + ", " + m.group(2).strip()
+    ag = re.search(r"(\d{1,2})\s*-\s*(\d{1,2})\s*bina yasi", t) or re.search(r"bina yasi\s*(\d{1,2})\s*-\s*(\d{1,2})", t)
+    if ag: extra.append(f"{ag.group(2)} yasinda")          # aralığın üst sınırı (temkinli)
+    else:
+        ag = re.search(r"(\d{1,2})\s*\+?\s*bina yasi", t) or re.search(r"bina yasi\s*(\d{1,2})", t)
+        if ag: extra.append(f"{ag.group(1)} yasinda")
+    m = re.search(r"asansor\s*(var|yok)", t)
+    if m: extra.append("asansor " + m.group(1))
+    m = re.search(r"esya durumu\s*(\w+)", t)
+    if m: extra.append("esyasiz" if m.group(1) in ("bos", "esyasiz") else "esyali")
+    m = re.search(r"([\w\.\-]+(?:\s*kat)?)\s*bulundugu kat", t)
+    if m and "bodrum" in m.group(1): extra.append("bodrum kat")
+    if m and "cati" in m.group(1): extra.append("cati kati")
+    m = re.search(r"(\d{2,3})\s*m²\s*net", t)
+    if m: extra.append(f"{m.group(1)} m²")
+    return extra, loc
+
+def enrich(it):
+    if "emlakjet.com/ilan/" not in it["url"]: return it
+    try:
+        r = requests.get(it["url"], headers=UA, timeout=30); r.raise_for_status()
+        extra, loc = parse_detail(BeautifulSoup(r.text, "html.parser").get_text(" ", strip=True))
+    except Exception:
+        return it
+    return {**it, "text": it["text"] + " | " + " ".join(extra), "loc": loc, "verified": bool(extra or loc)}
 
 # ---------- TELEGRAM ----------
 def send(msg):
@@ -185,6 +227,13 @@ def main():
         r = score(it, cfg)
         if r: results.append((r[0], r[1], it, r[2]))
     results.sort(key=lambda x: -x[0])
+    n = int(cfg.get("detail_limit", 25))
+    enriched = []
+    for sc, nt, it, m in results[:n]:
+        it2 = enrich(it); time.sleep(0.7)
+        r2 = score(it2, cfg) if it2 is not it else (sc, nt, m)
+        if r2: enriched.append((r2[0], r2[1], it2, r2[2]))
+    results = sorted(enriched + results[n:], key=lambda x: -x[0])
 
     for sc, notes, it, _ in [r for r in results if r[0] >= cfg["send_min_score"]]:
         out(f"🏡 Uyum: %{sc}  ({it['source']})\n" + "\n".join(notes) + f"\n{it['url']}")
