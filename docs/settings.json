@@ -4,26 +4,9 @@
  "max_building_age": 20,
  "frequency_minutes": 60,
  "send_min_score": 60,
- "areas": {
-  "sanayi mah": 1,
-  "emniyet evleri": 1,
-  "yesilce": 1,
-  "sirintepe": 1,
-  "celiktepe": 2,
-  "gultepe": 2,
-  "gursel": 2,
-  "harmantepe": 2,
-  "hamidiye": 2,
-  "hurriyet": 2,
-  "merkez mah": 2,
-  "mimar sinan": 2,
-  "nurtepe": 2,
-  "ortabayir": 2,
-  "talatpasa": 2,
-  "seyrantepe": 2,
-  "caglayan": 2,
-  "yahya kemal": 2,
-  "telsizler": 2,
-  "sisli": 3
+ "locations": {
+  "city": "",
+  "districts": [],
+  "neighborhoods": []
  }
 }
