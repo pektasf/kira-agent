@@ -5,21 +5,39 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: kira-agent-scan
+  cancel-in-progress: false
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install -r requirements.txt
-      - run: python agent.py
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Scan listings
+        run: python agent.py
         env:
+          KIRA_DATA_DIR: docs
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           FORCE: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
-      - name: seen.json'u kaydet
+      - name: Persist scan state and results
         run: |
-          git config user.name "kira-agent"; git config user.email "bot@users.noreply.github.com"
-          git add seen.json last_run.txt docs && git commit -m "state" || true
-          git push || true
+          set -e
+          git config user.name "kira-agent"
+          git config user.email "bot@users.noreply.github.com"
+          git add docs/seen.json docs/last_run.txt docs/settings.json docs/results.json
+          if git diff --cached --quiet; then
+            echo "No state or result changes to commit."
+          else
+            git commit -m "Update rental scan results and state"
+            git push
+          fi
