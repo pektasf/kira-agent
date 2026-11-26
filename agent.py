@@ -120,7 +120,10 @@ def fetch_public_api(src):
         area = row.get("area") or row.get("sqm") or row.get("size") or ""
         age = row.get("building_age") or row.get("age") or ""
         loc = " ".join(str(x) for x in (city, district, neighborhood) if x)
-        text = " | ".join(str(x) for x in (title, description, price, rooms, area, age, loc) if x)
+        price_text = f"{price} TL" if price and not re.search(r"tl|₺", str(price), re.I) else price
+        area_text = f"{area} m²" if area and not re.search(r"m", str(area), re.I) else area
+        age_text = f"{age} bina yaşı" if age and not re.search(r"yaş|yas", str(age), re.I) else age
+        text = " | ".join(str(x) for x in (title, description, price_text, rooms, area_text, age_text, loc) if x)
         out.append({"source": src.get("name", "KiralıkEv API"), "url": str(url),
                     "text": text, "loc": loc or None})
     print(f"{src.get('name', 'Public API')}: {len(out)} ilan (API)")
