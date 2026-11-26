@@ -59,7 +59,8 @@ const tl=n=>n?n.toLocaleString("tr-TR")+" ₺":"?",msg=t=>$("msg").textContent=t
 $("tok").value=localStorage.tok||"";
 $("repo").value=localStorage.repo||(location.hostname.endsWith("github.io")?location.hostname.split(".")[0]+"/"+location.pathname.split("/")[1]:"");
 const gh=(p,o={})=>fetch(`https://api.github.com/repos/${$("repo").value}/${p}`,{...o,headers:{Authorization:"Bearer "+$("tok").value,Accept:"application/vnd.github+json"}});
-async function getJSON(f){try{const r=await fetch(`https://api.github.com/repos/${$("repo").value}/contents/docs/${f}`,{headers:{Accept:"application/vnd.github.raw+json"}});if(r.ok)return await r.json()}catch(e){}
+async function getJSON(f){if(!location.hostname.endsWith("github.io")){try{const r=await fetch("/api/"+f.replace(".json",""));if(r.ok)return await r.json()}catch(e){}}
+ try{const r=await fetch(`https://api.github.com/repos/${$("repo").value}/contents/docs/${f}`,{headers:{Accept:"application/vnd.github.raw+json"}});if(r.ok)return await r.json()}catch(e){}
  try{return await (await fetch(f+"?t="+Date.now())).json()}catch(e){return null}}
 async function load(){
  S=await getJSON("settings.json")||{};D=S.districts||[];CS=S.custom_sources||[];
@@ -96,11 +97,13 @@ async function save(){
  NUM.forEach(k=>{const v=$(k).value;if(v!=="")s[k]=+v;else delete s[k]});CHK.forEach(k=>s[k]=$(k).checked);
  WORDS.forEach(k=>s[k]=$(k).value.split(",").map(x=>x.trim()).filter(Boolean));
  document.querySelectorAll("[data-a]").forEach(e=>s.areas[e.dataset.a]=+e.value);
+ if(!location.hostname.endsWith("github.io")){const r=await fetch("/api/settings",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(s)});if(r.ok){S=s;msg("✅ Sunucuya kaydedildi.");return true}msg("❌ Ayarlar kaydedilemedi: "+r.status);return false}
  const g=await gh("contents/docs/settings.json"),sha=g.ok?(await g.json()).sha:undefined;
  const r=await gh("contents/docs/settings.json",{method:"PUT",body:JSON.stringify({message:"ayarlar",sha,content:btoa(unescape(encodeURIComponent(JSON.stringify(s,null,1))))})});
  if(r.ok)S=s;msg(r.ok?"✅ Kaydedildi. Bir sonraki taramada geçerli olur.":"❌ Hata: "+r.status+" (token/repo yetkisini kontrol et)");return r.ok}
 async function rescan(){S.rescan_id=Date.now();if(await save())run()}
 async function run(){
+ if(!location.hostname.endsWith("github.io")){const r=await fetch("/api/scan",{method:"POST"});if(!r.ok){msg("❌ Tarama başlatılamadı: "+r.status);return}msg("▶️ Sunucuda tarama kuyruğa alındı.");setTimeout(loadRes,5000);return}
  const t0=Date.now()-20000,r=await gh("actions/workflows/agent.yml/dispatches",{method:"POST",body:JSON.stringify({ref:"main"})});
  if(!r.ok){msg("❌ Hata: "+r.status);return}
  msg("▶️ Tarama başlatıldı…");
