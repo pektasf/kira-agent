@@ -85,6 +85,7 @@ def parse(text):
 def score(item, cfg):
     t, price, rooms, age = parse(item["text"])
     notes, pts = [], 0
+    if re.search(r"paylasimli|\byurt\b|ogrenci|erkek|bayan|ozel oda|odalar mevcut|gunluk|devren|ortak mutfak|ortak oda", t): return None
 
     # --- eleme kuralları ---
     if price and price > cfg["budget_max"]: return None
@@ -123,7 +124,8 @@ def score(item, cfg):
     else:
         notes.append("💰 Fiyat okunamadı")
     # --- diğer ---
-    if rooms is not None and rooms >= 3: pts += 5
+    if rooms is None: pts -= 20; notes.append("⚠️ Oda sayısı okunamadı")
+    elif rooms >= 3: pts += 5
     if age is not None:
         pts += 10 if age <= 10 else 5
         notes.append(f"🏢 Bina yaşı: {age}")
