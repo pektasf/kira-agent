@@ -105,7 +105,7 @@ def fetch_public_api(src):
     rows = find_rows(payload)
     out = []
     for row in rows:
-        url = row.get("url") or row.get("listing_url") or row.get("permalink") or row.get("link")
+        url = row.get("url") or row.get("listing_url") or row.get("listingUrl") or row.get("detailUrl") or row.get("permalink") or row.get("link")
         if not url: continue
         if str(url).startswith("/"):
             url = "https://kiralikev.net" + str(url)
@@ -115,11 +115,12 @@ def fetch_public_api(src):
         city = row.get("city") or row.get("province") or row.get("il") or ""
         district = row.get("district") or row.get("county") or row.get("ilce") or ""
         neighborhood = row.get("neighborhood") or row.get("quarter") or row.get("mahalle") or ""
-        price = row.get("price") or row.get("rent") or row.get("monthly_price") or ""
+        location_text = row.get("location") or row.get("address") or row.get("full_address") or ""
+        price = row.get("price") or row.get("rent") or row.get("monthly_price") or row.get("monthlyRent") or ""
         rooms = row.get("rooms") or row.get("room_count") or row.get("room_type") or ""
         area = row.get("area") or row.get("sqm") or row.get("size") or ""
         age = row.get("building_age") or row.get("age") or ""
-        loc = " ".join(str(x) for x in (city, district, neighborhood) if x)
+        loc = " ".join(str(x) for x in (city, district, neighborhood, location_text) if x)
         price_text = f"{price} TL" if price and not re.search(r"tl|₺", str(price), re.I) else price
         area_text = f"{area} m²" if area and not re.search(r"m", str(area), re.I) else area
         age_text = f"{age} bina yaşı" if age and not re.search(r"yaş|yas", str(age), re.I) else age
