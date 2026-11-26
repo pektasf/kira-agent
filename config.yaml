@@ -1,0 +1,52 @@
+# ---- KRİTERLER ----
+budget_max: 40000          # aylık kira üst sınırı (TL)
+min_rooms: 2               # 2+1 ve üstü (soldaki sayı)
+allow_furnished: false     # eşyasız istiyorsun
+max_building_age: 20       # "çok yaşlı olmasın" -> 20 yıl varsayıldı, değiştirebilirsin
+attic_needs_elevator: true # çatı katıysa asansör şart (bebek)
+
+# ---- RAPORLAMA ----
+send_min_score: 60         # bu puan ve üstü: tek tek detaylı mesaj
+digest_min_score: 40       # 40-59 arası: tek özet mesajında
+
+# ---- MAHALLE ÖNCELİKLERİ (alias'lar sadeleştirilmiş: küçük harf, Türkçe karaktersiz) ----
+tiers:
+  1:   # ana hedef
+    points: 40
+    aliases: ["sanayi mah", "emniyet evleri", "yesilce", "sirintepe"]
+  2:   # Kağıthane'nin diğer mahalleleri
+    points: 25
+    aliases: ["celiktepe", "gultepe", "gursel", "harmantepe", "hamidiye", "hurriyet",
+              "merkez mah", "mimar sinan", "nurtepe", "ortabayir", "talatpasa",
+              "seyrantepe", "caglayan", "yahya kemal", "telsizler", "fahri koruturk", "kagithane"]
+  3:   # Şişli
+    points: 15
+    aliases: ["sisli"]
+
+# Mahalleye özel şartlar (ilan metninde geçmiyorsa puan kırılır)
+conditional:
+  yesilce:   {need: ["cadde", "ana cadde", "metro"], penalty: 15}
+  sirintepe: {need: ["sanayi"], penalty: 15}
+
+# ---- KAYNAKLAR ----
+# type: listing_site -> sitede kendi filtreni uygula, çıkan arama sonucu URL'sini yapıştır
+# type: telegram_channel -> herkese açık kanal (t.me/s/KANALADI)
+sources:
+  - name: Hepsiemlak
+    type: listing_site
+    url: "https://www.hepsiemlak.com/kagithane-kiralik/daire"   # filtreli URL ile değiştir
+    link_pattern: "/(kagithane|sisli)[^\"]*-\\d+"
+    base: "https://www.hepsiemlak.com"
+  - name: Emlakjet
+    type: listing_site
+    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane"
+    link_pattern: "/ilan/"
+    base: "https://www.emlakjet.com"
+  - name: Sahibinden
+    type: listing_site       # Cloudflare korumalı: büyük olasılıkla 403 verir (README'ye bak)
+    url: "https://www.sahibinden.com/kiralik-daire/istanbul-kagithane"
+    link_pattern: "/ilan/"
+    base: "https://www.sahibinden.com"
+  # - name: Örnek Telegram kanalı
+  #   type: telegram_channel
+  #   channel: "KANAL_ADI"
