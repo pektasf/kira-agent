@@ -1,70 +1,108 @@
-<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kira Agent</title>
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Kira Agent</title>
 <style>
 :root{--bg:#fff;--fg:#1a1a1a;--card:#f3f3f0;--mut:#666;--ac:#0b6e4f;--bd:#d8d8d4}
 @media(prefers-color-scheme:dark){:root{--bg:#161616;--fg:#eee;--card:#222;--mut:#9a9a9a;--ac:#4cc79a;--bd:#363636}}
-body{font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg);max-width:920px;margin:0 auto;padding:16px}
-h1{font-size:20px}h2{font-size:16px;margin-top:28px}
-.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.c{background:var(--card);border-radius:10px;padding:12px}.c b{display:block;font-size:20px}.m{color:var(--mut);font-size:13px}
-label{display:block;font-size:13px;color:var(--mut)}input,select,button{font:inherit;padding:7px;border:1px solid var(--bd);border-radius:7px;background:var(--bg);color:var(--fg);width:100%;box-sizing:border-box}
-button{background:var(--ac);color:#fff;border:0;cursor:pointer}button.s{background:var(--card);color:var(--fg);border:1px solid var(--bd)}
-.bar{height:8px;background:var(--ac);border-radius:4px}.row{display:flex;align-items:center;gap:8px;margin:5px 0}.row span:first-child{width:110px;font-size:13px}
-.t{overflow-x:auto}table{border-collapse:collapse;width:100%}td,th{padding:7px;border-bottom:1px solid var(--bd);text-align:left;font-size:13px}a{color:var(--ac)}
+*{box-sizing:border-box}body{font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg);max-width:960px;margin:0 auto;padding:16px}
+h1{font-size:21px;margin:0}h2{font-size:16px;margin:26px 0 10px}.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.c{background:var(--card);border-radius:10px;padding:12px}.c b{display:block;font-size:20px}.m{color:var(--mut);font-size:13px}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}input,select,button{font:inherit;padding:7px;border:1px solid var(--bd);border-radius:7px;background:var(--bg);color:var(--fg);width:100%}
+button{background:var(--ac);color:#fff;border:0;cursor:pointer}button.s{background:var(--card);color:var(--fg);border:1px solid var(--bd)}.btns{display:flex;gap:8px}.btns button{width:auto;padding:7px 14px}
+.ck{display:flex;gap:8px;align-items:center;color:var(--fg);font-size:14px}.ck input{width:auto}
+.bar{height:8px;background:var(--ac);border-radius:4px}.row{display:flex;align-items:center;gap:8px;margin:5px 0}.row span:first-child{width:90px;font-size:13px}
+.t{overflow-x:auto}table{border-collapse:collapse;width:100%}td,th{padding:7px;border-bottom:1px solid var(--bd);text-align:left;font-size:13px;vertical-align:top}a{color:var(--ac)}
+.chip{display:inline-block;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:3px 10px;margin:3px 4px 0 0;font-size:13px}
 </style></head><body>
-<h1>🏡 Kira Agent</h1><div class="m" id="upd"></div>
+<div class="top"><div><h1>🏡 Kira Agent</h1><div class="m" id="upd"></div></div>
+<div class="btns"><button onclick="run()">Şimdi tara</button><button class="s" onclick="rescan()" title="Daha önce görülen ilanlar dahil her şeyi yeniden değerlendirir">Tümünü yeniden tara</button></div></div>
+<p class="m" id="msg"></p>
 
 <h2>Rapor</h2><div class="g" id="kpi"></div>
-<div class="g" style="margin-top:10px"><div class="c"><b style="font-size:14px">Bölge kademesine göre</b><div id="byTier"></div></div>
-<div class="c"><b style="font-size:14px">Fiyat aralığı</b><div id="byPrice"></div></div></div>
+<div class="g" style="margin-top:10px"><div class="c"><b style="font-size:14px">Bölge kademesi</b><div id="byTier"></div></div><div class="c"><b style="font-size:14px">Fiyat aralığı</b><div id="byPrice"></div></div><div class="c"><b style="font-size:14px">Kaynak</b><div id="bySrc"></div></div></div>
 <p id="insight" class="m"></p>
-<div class="t"><table><thead><tr><th>Uyum</th><th>Fiyat</th><th>Oda</th><th>Yaş</th><th>Kaynak</th><th>Detay</th></tr></thead><tbody id="top"></tbody></table></div>
 
-<h2>Filtreler</h2>
+<h2>Sonuçlar <span class="m" id="cnt"></span></h2>
+<div class="g"><div><label>Ara (başlık/not)</label><input id="fq" oninput="view()"></div>
+<div><label>Min. uyum: <span id="fsv">0</span>%</label><input id="fscore" type="range" min="0" max="100" value="0" oninput="$('fsv').textContent=this.value;view()"></div>
+<div><label>Bölge kademesi</label><select id="ftier" onchange="view()"><option value="">Hepsi</option><option value="1">1. öncelik</option><option value="2">2. öncelik</option><option value="3">3. öncelik</option></select></div>
+<div><label>Kaynak</label><select id="fsrc" onchange="view()"></select></div>
+<div><label>Sırala</label><select id="fsort" onchange="view()"><option value="score">Uyum</option><option value="new">En yeni</option><option value="priceAsc">Fiyat ↑</option><option value="priceDesc">Fiyat ↓</option></select></div></div>
+<div class="t"><table><thead><tr><th>Uyum</th><th>Fiyat</th><th>Oda</th><th>m²</th><th>Yaş</th><th>Detay</th></tr></thead><tbody id="top"></tbody></table></div>
+
+<h2>Arama filtreleri</h2>
 <div class="g">
 <div><label>Maks. kira (TL)</label><input id="budget_max" type="number" step="500"></div>
-<div><label>Min. oda (2 = 2+1)</label><input id="min_rooms" type="number" min="1" max="6"></div>
+<div><label>Min. oda (2 = 2+1)</label><input id="min_rooms" type="number" min="1" max="5"></div>
+<div><label>Min. m² (boş = fark etmez)</label><input id="min_sqm" type="number"></div>
 <div><label>Maks. bina yaşı</label><input id="max_building_age" type="number"></div>
-<div><label>Arama sıklığı</label><select id="frequency_minutes"><option value="60">1 saat</option><option value="180">3 saat</option><option value="360">6 saat</option><option value="720">12 saat</option></select></div>
+<div><label>Tarama sıklığı</label><select id="frequency_minutes"><option value="60">1 saat</option><option value="180">3 saat</option><option value="360">6 saat</option><option value="720">12 saat</option></select></div>
 <div><label>Telegram min. uyum (%)</label><input id="send_min_score" type="number" min="0" max="100"></div></div>
-<h2>Mahalleler</h2><div class="g" id="areas"></div>
-<h2>Kaydet</h2>
-<div class="g"><div><label>GitHub token (sadece bu tarayıcıda saklanır)</label><input id="tok" type="password"></div>
-<div><label>Repo (kullanici/repo)</label><input id="repo"></div></div>
-<div class="g" style="margin-top:10px"><button onclick="save()">Ayarları kaydet</button><button class="s" onclick="runNow()">Şimdi tara</button></div><p id="msg" class="m"></p>
+<div class="g" style="margin-top:10px"><label class="ck"><input type="checkbox" id="allow_furnished"> Eşyalı ilanlar da gelsin</label><label class="ck"><input type="checkbox" id="attic_needs_elevator"> Çatı katı ise asansör şart</label><label class="ck"><input type="checkbox" id="notify"> Telegram bildirimi açık</label></div>
+<div class="g" style="margin-top:10px"><div><label>İstemediğim kelimeler (virgülle): bu geçen ilan elenir</label><input id="exclude_words" placeholder="bodrum, ara kat"></div><div><label>Tercih ettiğim kelimeler (virgülle): puan artar</label><input id="prefer_words" placeholder="balkon, metro, cadde"></div></div>
 
+<h2>Mahalle öncelikleri</h2><div class="g" id="areas"></div>
+<h2>İlçe ekle</h2>
+<div class="g"><div><label>İlçe adı (örn. Beşiktaş)</label><input id="dn"></div><div><label>Öncelik</label><select id="dt"><option value="1">1. öncelik</option><option value="2" selected>2. öncelik</option><option value="3">3. öncelik</option></select></div><div><label>&nbsp;</label><button class="s" onclick="addD()">Ekle</button></div></div>
+<div id="dl"></div>
+
+<h2>Kaydet</h2>
+<div class="g"><div><label>GitHub token (sadece bu tarayıcıda saklanır)</label><input id="tok" type="password"></div><div><label>Repo (kullanici/repo)</label><input id="repo"></div></div>
+<div class="btns" style="margin-top:10px"><button onclick="save()">Ayarları kaydet</button></div>
 <script>
-const $=id=>document.getElementById(id),F=["budget_max","min_rooms","max_building_age","frequency_minutes","send_min_score"];
+const $=id=>document.getElementById(id),fold=s=>s.replace(/İ/g,"i").replace(/I/g,"ı").toLowerCase().replace(/ç/g,"c").replace(/ş/g,"s").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ü/g,"u");
+const NUM=["budget_max","min_rooms","min_sqm","max_building_age","frequency_minutes","send_min_score"],CHK=["allow_furnished","attic_needs_elevator","notify"],WORDS=["exclude_words","prefer_words"],DEF={allow_furnished:false,attic_needs_elevator:true,notify:true};
 const AREAS="sanayi mah:Sanayi:1,emniyet evleri:Emniyet Evleri:1,yesilce:Yeşilce:1,sirintepe:Şirintepe:1,celiktepe:Çeliktepe:2,gultepe:Gültepe:2,gursel:Gürsel:2,harmantepe:Harmantepe:2,hamidiye:Hamidiye:2,hurriyet:Hürriyet:2,merkez mah:Merkez:2,mimar sinan:Mimar Sinan:2,nurtepe:Nurtepe:2,ortabayir:Ortabayır:2,talatpasa:Talatpaşa:2,seyrantepe:Seyrantepe:2,caglayan:Çağlayan:2,yahya kemal:Yahya Kemal:2,telsizler:Telsizler:2,sisli:Şişli:3".split(",").map(x=>x.split(":"));
-let S={};
-const hdr=()=>({Authorization:"Bearer "+$("tok").value,Accept:"application/vnd.github+json"});
-const tl=n=>n?n.toLocaleString("tr-TR")+" ₺":"?";
+let S={},D=[],ALL=[];
+const tl=n=>n?n.toLocaleString("tr-TR")+" ₺":"?",msg=t=>$("msg").textContent=t,med=a=>{a=a.filter(Boolean).sort((x,y)=>x-y);return a.length?a[a.length>>1]:0};
 $("tok").value=localStorage.tok||"";
 $("repo").value=localStorage.repo||(location.hostname.endsWith("github.io")?location.hostname.split(".")[0]+"/"+location.pathname.split("/")[1]:"");
+const gh=(p,o={})=>fetch(`https://api.github.com/repos/${$("repo").value}/${p}`,{...o,headers:{Authorization:"Bearer "+$("tok").value,Accept:"application/vnd.github+json"}});
+async function getJSON(f){try{const r=await fetch(`https://api.github.com/repos/${$("repo").value}/contents/docs/${f}`,{headers:{Accept:"application/vnd.github.raw+json"}});if(r.ok)return await r.json()}catch(e){}
+ try{return await (await fetch(f+"?t="+Date.now())).json()}catch(e){return null}}
 async function load(){
- try{S=await (await fetch("settings.json?t="+Date.now())).json()}catch(e){}
- F.forEach(k=>{if(S[k]!=null)$(k).value=S[k]});
+ S=await getJSON("settings.json")||{};D=S.districts||[];
+ NUM.forEach(k=>{if(S[k]!=null)$(k).value=S[k]});CHK.forEach(k=>$(k).checked=S[k]??DEF[k]);WORDS.forEach(k=>$(k).value=(S[k]||[]).join(", "));
  $("areas").innerHTML=AREAS.map(([a,n,t])=>{const v=(S.areas||{})[a]??t;return `<div><label>${n}</label><select data-a="${a}">${[["0","Kapalı"],["1","1. öncelik"],["2","2. öncelik"],["3","3. öncelik"]].map(([x,y])=>`<option value="${x}" ${x==v?"selected":""}>${y}</option>`).join("")}</select></div>`}).join("");
- let R={items:[]};try{R=await (await fetch("results.json?t="+Date.now())).json()}catch(e){}
- report(R)}
-function report(R){
- const it=R.items;$("upd").textContent="Son tarama: "+(R.updated||"henüz yok")+(R.errors?.length?" · ⚠️ "+R.errors.length+" kaynak hatası":"");
- const pr=it.map(i=>i.price).filter(Boolean).sort((a,b)=>a-b),med=pr.length?pr[pr.length>>1]:0;
- const best=it.filter(i=>i.score>=60).length;
- $("kpi").innerHTML=[["Toplam eşleşme",it.length],["Güçlü eşleşme (≥60)",best],["Medyan kira",tl(med)],["En düşük kira",tl(pr[0])]].map(([a,b])=>`<div class="c"><b>${b}</b><span class="m">${a}</span></div>`).join("");
- const bar=(el,rows)=>{const mx=Math.max(1,...rows.map(r=>r[1]));$(el).innerHTML=rows.map(([a,n])=>`<div class="row"><span>${a}</span><div class="bar" style="width:${n/mx*100}%"></div><span>${n}</span></div>`).join("")};
- bar("byTier",[1,2,3].map(t=>[t+". kademe",it.filter(i=>i.tier==t).length]));
- const bands=[["<30 bin",0,30e3],["30–35 bin",30e3,35e3],["35–40 bin",35e3,40e3]];
- bar("byPrice",bands.map(([n,a,b])=>[n,it.filter(i=>i.price>=a&&i.price<b).length]));
+ chips();loadRes()}
+async function loadRes(){
+ const R=await getJSON("results.json")||{items:[]};ALL=R.items||[];
+ $("upd").textContent="Son tarama: "+(R.updated||"henüz yok")+(R.errors?.length?" · ⚠️ "+R.errors.length+" kaynak hatası":"");
+ const srcs=[...new Set(ALL.map(i=>i.source))];$("fsrc").innerHTML='<option value="">Tüm kaynaklar</option>'+srcs.map(s=>`<option>${s}</option>`).join("");
+ report();view()}
+function bar(el,rows){const mx=Math.max(1,...rows.map(r=>r[1]));$(el).innerHTML=rows.map(([a,n])=>`<div class="row"><span>${a}</span><div class="bar" style="width:${n/mx*100}%"></div><span>${n}</span></div>`).join("")}
+function report(){
+ const it=ALL,pr=it.map(i=>i.price).filter(Boolean).sort((a,b)=>a-b);
+ $("kpi").innerHTML=[["Toplam eşleşme",it.length],["Güçlü (≥60)",it.filter(i=>i.score>=60).length],["Medyan kira",tl(med(pr))],["En düşük kira",tl(pr[0])]].map(([a,b])=>`<div class="c"><b>${b}</b><span class="m">${a}</span></div>`).join("");
+ bar("byTier",[1,2,3].map(t=>[t+". öncelik",it.filter(i=>i.tier==t).length]));
+ bar("byPrice",[["<30 bin",0,3e4],["30–35 bin",3e4,35e3],["35–40 bin",35e3,4e4],["40 bin+",4e4,1e9]].map(([n,a,b])=>[n,it.filter(i=>i.price>=a&&i.price<b).length]));
+ bar("bySrc",[...new Set(it.map(i=>i.source))].map(s=>[s.replace("Emlakjet ","EJ "),it.filter(i=>i.source==s).length]));
  const t1=it.filter(i=>i.tier==1);
- $("insight").textContent=it.length?`Eşleşmelerin ${Math.round(t1.length/it.length*100)}%'i 1. öncelikli mahallelerde. `+(t1.length?`Bu bölgedeki medyan kira ${tl(t1.map(i=>i.price).filter(Boolean).sort((a,b)=>a-b)[t1.length>>1])}.`:"1. öncelikli bölgede henüz ilan yok; bütçeyi veya öncelikleri gevşetmeyi düşün."):"Henüz eşleşen ilan yok.";
- $("top").innerHTML=[...it].sort((a,b)=>b.score-a.score).slice(0,15).map(i=>`<tr><td><b>%${i.score}</b></td><td>${tl(i.price)}</td><td>${i.rooms??"?"}+</td><td>${i.age??"?"}</td><td>${i.source}</td><td><a href="${i.url}" target="_blank" rel="noopener">İlana git</a><div class="m">${(i.notes||[]).slice(0,2).join(" · ")}</div></td></tr>`).join("")}
-async function gh(path,opt={}){return fetch(`https://api.github.com/repos/${$("repo").value}/${path}`,{...opt,headers:hdr()})}
+ $("insight").textContent=it.length?`Eşleşmelerin %${Math.round(t1.length/it.length*100)}’i 1. öncelikli mahallelerde. `+(t1.length?`Bu bölgedeki medyan kira ${tl(med(t1.map(i=>i.price)))}.`:"1. öncelikli bölgede henüz ilan yok; bütçeyi ya da önceliği gevşetmeyi düşün."):"Henüz eşleşen ilan yok."}
+function view(){
+ const q=fold($("fq").value),ms=+$("fscore").value,ft=$("ftier").value,fs=$("fsrc").value;
+ const L=ALL.filter(i=>i.score>=ms&&(!ft||i.tier==ft)&&(!fs||i.source==fs)&&(!q||fold(i.url+" "+(i.notes||[]).join(" ")).includes(q)));
+ L.sort({score:(a,b)=>b.score-a.score,priceAsc:(a,b)=>(a.price||9e9)-(b.price||9e9),priceDesc:(a,b)=>(b.price||0)-(a.price||0),new:(a,b)=>(b.found||"").localeCompare(a.found||"")}[$("fsort").value]);
+ $("cnt").textContent="· "+L.length+" ilan";
+ $("top").innerHTML=L.slice(0,60).map(i=>`<tr><td><b>%${i.score}</b></td><td>${tl(i.price)}</td><td>${i.rooms??"?"}+</td><td>${i.sqm??"?"}</td><td>${i.age??"?"}</td><td><a href="${i.url}" target="_blank" rel="noopener">${i.source}</a><div class="m">${(i.notes||[]).slice(0,3).join(" · ")}</div></td></tr>`).join("")}
+function chips(){$("dl").innerHTML=D.map((d,i)=>`<span class="chip">${d.label} · ${d.tier}. öncelik <a href="#" onclick="D.splice(${i},1);chips();return false">×</a></span>`).join("")||'<span class="m">Henüz eklenmedi. Eklediğin ilçe de taranır; kaydetmeyi unutma.</span>'}
+function addD(){const n=$("dn").value.trim();if(!n)return;const a=fold(n);if(!D.some(d=>d.alias==a))D.push({label:n,alias:a,slug:a.replace(/\s+/g,"-"),tier:+$("dt").value});$("dn").value="";chips()}
 async function save(){
  localStorage.tok=$("tok").value;localStorage.repo=$("repo").value;
- const s={...S,areas:{}};F.forEach(k=>s[k]=+$(k).value);document.querySelectorAll("[data-a]").forEach(e=>s.areas[e.dataset.a]=+e.value);
+ const s={...S,areas:{},districts:D};
+ NUM.forEach(k=>{const v=$(k).value;if(v!=="")s[k]=+v;else delete s[k]});CHK.forEach(k=>s[k]=$(k).checked);
+ WORDS.forEach(k=>s[k]=$(k).value.split(",").map(x=>x.trim()).filter(Boolean));
+ document.querySelectorAll("[data-a]").forEach(e=>s.areas[e.dataset.a]=+e.value);
  const g=await gh("contents/docs/settings.json"),sha=g.ok?(await g.json()).sha:undefined;
  const r=await gh("contents/docs/settings.json",{method:"PUT",body:JSON.stringify({message:"ayarlar",sha,content:btoa(unescape(encodeURIComponent(JSON.stringify(s,null,1))))})});
- $("msg").textContent=r.ok?"✅ Kaydedildi. Bir sonraki taramada geçerli olur.":"❌ Hata: "+r.status+" (token/repo yetkisini kontrol et)"}
-async function runNow(){const r=await gh("actions/workflows/agent.yml/dispatches",{method:"POST",body:JSON.stringify({ref:"main"})});$("msg").textContent=r.ok?"▶️ Tarama başlatıldı, 1-2 dk sonra yenile.":"❌ Hata: "+r.status}
+ if(r.ok)S=s;msg(r.ok?"✅ Kaydedildi. Bir sonraki taramada geçerli olur.":"❌ Hata: "+r.status+" (token/repo yetkisini kontrol et)");return r.ok}
+async function rescan(){S.rescan_id=Date.now();if(await save())run()}
+async function run(){
+ const t0=Date.now()-20000,r=await gh("actions/workflows/agent.yml/dispatches",{method:"POST",body:JSON.stringify({ref:"main"})});
+ if(!r.ok){msg("❌ Hata: "+r.status);return}
+ msg("▶️ Tarama başlatıldı…");
+ for(let i=0;i<30;i++){await new Promise(x=>setTimeout(x,8000));
+  const g=await gh("actions/workflows/agent.yml/runs?per_page=1&event=workflow_dispatch");if(!g.ok)continue;
+  const j=(await g.json()).workflow_runs?.[0];
+  if(j&&Date.parse(j.created_at)>=t0){if(j.status=="completed"){msg(j.conclusion=="success"?"✅ Tarama bitti, sonuçlar yüklendi.":"⚠️ Tarama hata verdi: "+j.conclusion);loadRes();return}msg("⏳ Çalışıyor…")}}
+ msg("⏳ Hâlâ sürüyor, birazdan sayfayı yenile.")}
 load();
 </script></body></html>
