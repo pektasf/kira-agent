@@ -22,6 +22,8 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Validate Python syntax
+        run: python -m py_compile agent.py
       - name: Scan listings
         run: python agent.py
         env:
