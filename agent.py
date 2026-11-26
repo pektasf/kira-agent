@@ -5,7 +5,11 @@ from bs4 import BeautifulSoup
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
       "Accept-Language": "tr-TR,tr;q=0.9"}
-STATE = "seen.json"
+from pathlib import Path
+
+DATA_DIR = Path(os.environ.get("KIRA_DATA_DIR", "."))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+STATE = str(DATA_DIR / "seen.json")
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT = os.environ.get("TELEGRAM_CHAT_ID")
 
@@ -13,7 +17,9 @@ def fold(s):
     s = s.replace("İ", "i").replace("I", "ı").lower()
     return s.translate(str.maketrans("çşğıöü", "csgiou"))
 
-SETTINGS, RESULTS, LASTRUN = "docs/settings.json", "docs/results.json", "last_run.txt"
+SETTINGS = str(DATA_DIR / "settings.json")
+RESULTS = str(DATA_DIR / "results.json")
+LASTRUN = str(DATA_DIR / "last_run.txt")
 
 def load_cfg():
     with open("config.yaml", encoding="utf-8") as f:
