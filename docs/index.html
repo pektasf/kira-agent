@@ -12,7 +12,7 @@ button{background:var(--ac);color:#fff;border:0;cursor:pointer}button.s{backgrou
 .t{overflow-x:auto}table{border-collapse:collapse;width:100%}td,th{padding:7px;border-bottom:1px solid var(--bd);text-align:left;font-size:13px;vertical-align:top}a{color:var(--ac)}
 .chip{display:inline-block;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:3px 10px;margin:3px 4px 0 0;font-size:13px}
 </style></head><body>
-<div class="top"><div><h1>🏡 Kira Agent</h1><div class="m" id="upd"></div></div>
+<div class="top"><div><h1>🏡 Kira Agent</h1><div class="m" id="upd"></div><div class="m" id="errs"></div></div>
 <div class="btns"><button onclick="run()">Şimdi tara</button><button class="s" onclick="rescan()" title="Daha önce görülen ilanlar dahil her şeyi yeniden değerlendirir">Tümünü yeniden tara</button></div></div>
 <p class="m" id="msg"></p>
 
@@ -44,6 +44,9 @@ button{background:var(--ac);color:#fff;border:0;cursor:pointer}button.s{backgrou
 <div class="g"><div><label>İlçe adı (örn. Beşiktaş)</label><input id="dn"></div><div><label>Öncelik</label><select id="dt"><option value="1">1. öncelik</option><option value="2" selected>2. öncelik</option><option value="3">3. öncelik</option></select></div><div><label>&nbsp;</label><button class="s" onclick="addD()">Ekle</button></div></div>
 <div id="dl"></div>
 
+<h2>Kaynak ekle</h2>
+<div class="g"><div><label>Tür</label><select id="st"><option value="site">Emlak sitesi (filtreli arama linki)</option><option value="tg">Telegram kanalı</option></select></div><div><label>Ad</label><input id="sn" placeholder="Zingat"></div><div><label>Link ya da kanal adı</label><input id="su"></div><div><label>&nbsp;</label><button class="s" onclick="addS()">Ekle</button></div></div>
+<div id="sl"></div>
 <h2>Kaydet</h2>
 <div class="g"><div><label>GitHub token (sadece bu tarayıcıda saklanır)</label><input id="tok" type="password"></div><div><label>Repo (kullanici/repo)</label><input id="repo"></div></div>
 <div class="btns" style="margin-top:10px"><button onclick="save()">Ayarları kaydet</button></div>
@@ -51,7 +54,7 @@ button{background:var(--ac);color:#fff;border:0;cursor:pointer}button.s{backgrou
 const $=id=>document.getElementById(id),fold=s=>s.replace(/İ/g,"i").replace(/I/g,"ı").toLowerCase().replace(/ç/g,"c").replace(/ş/g,"s").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ü/g,"u");
 const NUM=["budget_max","min_rooms","min_sqm","max_building_age","frequency_minutes","send_min_score"],CHK=["allow_furnished","attic_needs_elevator","notify"],WORDS=["exclude_words","prefer_words"],DEF={allow_furnished:false,attic_needs_elevator:true,notify:true};
 const AREAS="sanayi mah:Sanayi:1,emniyet evleri:Emniyet Evleri:1,yesilce:Yeşilce:1,sirintepe:Şirintepe:1,celiktepe:Çeliktepe:2,gultepe:Gültepe:2,gursel:Gürsel:2,harmantepe:Harmantepe:2,hamidiye:Hamidiye:2,hurriyet:Hürriyet:2,merkez mah:Merkez:2,mimar sinan:Mimar Sinan:2,nurtepe:Nurtepe:2,ortabayir:Ortabayır:2,talatpasa:Talatpaşa:2,seyrantepe:Seyrantepe:2,caglayan:Çağlayan:2,yahya kemal:Yahya Kemal:2,telsizler:Telsizler:2,sisli:Şişli:3".split(",").map(x=>x.split(":"));
-let S={},D=[],ALL=[];
+let S={},D=[],CS=[],ALL=[];
 const tl=n=>n?n.toLocaleString("tr-TR")+" ₺":"?",msg=t=>$("msg").textContent=t,med=a=>{a=a.filter(Boolean).sort((x,y)=>x-y);return a.length?a[a.length>>1]:0};
 $("tok").value=localStorage.tok||"";
 $("repo").value=localStorage.repo||(location.hostname.endsWith("github.io")?location.hostname.split(".")[0]+"/"+location.pathname.split("/")[1]:"");
@@ -59,14 +62,14 @@ const gh=(p,o={})=>fetch(`https://api.github.com/repos/${$("repo").value}/${p}`,
 async function getJSON(f){try{const r=await fetch(`https://api.github.com/repos/${$("repo").value}/contents/docs/${f}`,{headers:{Accept:"application/vnd.github.raw+json"}});if(r.ok)return await r.json()}catch(e){}
  try{return await (await fetch(f+"?t="+Date.now())).json()}catch(e){return null}}
 async function load(){
- S=await getJSON("settings.json")||{};D=S.districts||[];
+ S=await getJSON("settings.json")||{};D=S.districts||[];CS=S.custom_sources||[];
  NUM.forEach(k=>{if(S[k]!=null)$(k).value=S[k]});CHK.forEach(k=>$(k).checked=S[k]??DEF[k]);WORDS.forEach(k=>$(k).value=(S[k]||[]).join(", "));
  $("areas").innerHTML=AREAS.map(([a,n,t])=>{const v=(S.areas||{})[a]??t;return `<div><label>${n}</label><select data-a="${a}">${[["0","Kapalı"],["1","1. öncelik"],["2","2. öncelik"],["3","3. öncelik"]].map(([x,y])=>`<option value="${x}" ${x==v?"selected":""}>${y}</option>`).join("")}</select></div>`}).join("");
- chips();loadRes()}
+ chips();srcs();loadRes()}
 async function loadRes(){
  const R=await getJSON("results.json")||{items:[]};ALL=R.items||[];
  $("upd").textContent="Son tarama: "+(R.updated||"henüz yok")+(R.errors?.length?" · ⚠️ "+R.errors.length+" kaynak hatası":"");
- const srcs=[...new Set(ALL.map(i=>i.source))];$("fsrc").innerHTML='<option value="">Tüm kaynaklar</option>'+srcs.map(s=>`<option>${s}</option>`).join("");
+ $("errs").innerHTML=(R.errors||[]).map(e=>"• "+e.replace(/</g,"&lt;")).join("<br>");const sl=[...new Set(ALL.map(i=>i.source))];$("fsrc").innerHTML='<option value="">Tüm kaynaklar</option>'+sl.map(s=>`<option>${s}</option>`).join("");
  report();view()}
 function bar(el,rows){const mx=Math.max(1,...rows.map(r=>r[1]));$(el).innerHTML=rows.map(([a,n])=>`<div class="row"><span>${a}</span><div class="bar" style="width:${n/mx*100}%"></div><span>${n}</span></div>`).join("")}
 function report(){
@@ -85,9 +88,11 @@ function view(){
  $("top").innerHTML=L.slice(0,60).map(i=>`<tr><td><b>%${i.score}</b></td><td>${tl(i.price)}</td><td>${i.rooms??"?"}+</td><td>${i.sqm??"?"}</td><td>${i.age??"?"}</td><td><a href="${i.url}" target="_blank" rel="noopener">${i.source}</a><div class="m">${(i.notes||[]).slice(0,3).join(" · ")}</div></td></tr>`).join("")}
 function chips(){$("dl").innerHTML=D.map((d,i)=>`<span class="chip">${d.label} · ${d.tier}. öncelik <a href="#" onclick="D.splice(${i},1);chips();return false">×</a></span>`).join("")||'<span class="m">Henüz eklenmedi. Eklediğin ilçe de taranır; kaydetmeyi unutma.</span>'}
 function addD(){const n=$("dn").value.trim();if(!n)return;const a=fold(n);if(!D.some(d=>d.alias==a))D.push({label:n,alias:a,slug:a.replace(/\s+/g,"-"),tier:+$("dt").value});$("dn").value="";chips()}
+function srcs(){$("sl").innerHTML=CS.map((c,i)=>`<span class="chip">${c.type=="tg"?"TG":"Site"} · ${c.name} <a href="#" onclick="CS.splice(${i},1);srcs();return false">×</a></span>`).join("")||'<span class="m">Ek kaynak yok. Siteden filtreli aramanın adresini yapıştır; kaydetmeyi unutma.</span>'}
+function addS(){const t=$("st").value,n=$("sn").value.trim();let u=$("su").value.trim();if(!n||!u)return;if(t=="tg")u=u.replace(/^.*t\.me\/(s\/)?/,"").replace("@","");CS.push({type:t,name:n,url:u});$("sn").value=$("su").value="";srcs()}
 async function save(){
  localStorage.tok=$("tok").value;localStorage.repo=$("repo").value;
- const s={...S,areas:{},districts:D};
+ const s={...S,areas:{},districts:D,custom_sources:CS};
  NUM.forEach(k=>{const v=$(k).value;if(v!=="")s[k]=+v;else delete s[k]});CHK.forEach(k=>s[k]=$(k).checked);
  WORDS.forEach(k=>s[k]=$(k).value.split(",").map(x=>x.trim()).filter(Boolean));
  document.querySelectorAll("[data-a]").forEach(e=>s.areas[e.dataset.a]=+e.value);
