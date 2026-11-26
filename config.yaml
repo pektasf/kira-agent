@@ -34,32 +34,32 @@ conditional:
 sources:
   - name: Emlakjet Kağıthane
     type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane?filtreler=max-fiyat=40000&oda-sayisi=2-1,3-1,4-1"
+    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
     link_pattern: "/ilan/"
     base: "https://www.emlakjet.com"
   - name: Emlakjet Şişli
     type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-sisli?filtreler=max-fiyat=40000&oda-sayisi=2-1,3-1,4-1"
+    url: "https://www.emlakjet.com/kiralik-daire/istanbul-sisli?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
     link_pattern: "/ilan/"
     base: "https://www.emlakjet.com"
   - name: Emlakjet Emniyet Evleri
     type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-emniyet-evleri-mahallesi?filtreler=max-fiyat=40000&oda-sayisi=2-1,3-1,4-1"
+    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-emniyet-evleri-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
     link_pattern: "/ilan/"
     base: "https://www.emlakjet.com"
   - name: Emlakjet Sanayi
     type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-sanayi-mahallesi?filtreler=max-fiyat=40000&oda-sayisi=2-1,3-1,4-1"
+    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-sanayi-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
     link_pattern: "/ilan/"
     base: "https://www.emlakjet.com"
   - name: Emlakjet Yeşilce
     type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-yesilce-mahallesi?filtreler=max-fiyat=40000&oda-sayisi=2-1,3-1,4-1"
+    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-yesilce-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
     link_pattern: "/ilan/"
     base: "https://www.emlakjet.com"
   - name: Emlakjet Şirintepe
     type: listing_site
-    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-sirintepe-mahallesi?filtreler=max-fiyat=40000&oda-sayisi=2-1,3-1,4-1"
+    url: "https://www.emlakjet.com/kiralik-daire/istanbul-kagithane-sirintepe-mahallesi?filtreler=max-fiyat={budget_max}&oda-sayisi={rooms}"
     link_pattern: "/ilan/"
     base: "https://www.emlakjet.com"
 
