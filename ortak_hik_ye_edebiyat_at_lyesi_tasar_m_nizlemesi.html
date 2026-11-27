@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ortak Roman — Kolektif Edebiyat ve Metin Atölyesi</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Crimson Pro, Cormorant Garamond, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Crimson Pro"', '"Cormorant Garamond"', 'Georgia', 'serif'],
+            display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            paper: {
+              bg: '#FAFAEF',
+              card: '#F3F0E4',
+              border: '#E5E1D3',
+              ink: '#1C1B18',
+              muted: '#6E6A5F',
+              terracotta: '#C0613A',
+              terracottaHover: '#A8512D',
+              amber: '#EBA834',
+              sage: '#2E6F73',
+            },
+            night: {
+              bg: '#12121A',
+              card: '#181823',
+              border: '#2A2938',
+              ink: '#EAE6DF',
+              muted: '#9490A3',
+              terracotta: '#D97348',
+              amber: '#EBA834',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-color: #FAFAEF;
+      --text-color: #1C1B18;
+      --border-color: #E5E1D3;
+    }
+
+    html.dark {
+      --bg-color: #12121A;
+      --text-color: #EAE6DF;
+      --border-color: #2A2938;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* İnce Analog Kağıt Dokusu */
+    .paper-grain {
+      background-image: radial-gradient(rgba(28, 27, 24, 0.032) 1px, transparent 0);
+      background-size: 22px 22px;
+    }
+    html.dark .paper-grain {
+      background-image: radial-gradient(rgba(234, 230, 223, 0.028) 1px, transparent 0);
+      background-size: 22px 22px;
+    }
+
+    /* Bölüm Başlangıcı Drop Cap (Süslü İlk Harf) */
+    .literary-dropcap::first-letter {
+      float: left;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4.25rem;
+      line-height: 0.8;
+      padding-top: 0.25rem;
+      padding-right: 0.8rem;
+      padding-bottom: 0.1rem;
+      font-weight: 700;
+      color: #C0613A;
+    }
+    html.dark .literary-dropcap::first-letter {
+      color: #D97348;
+    }
+
+    /* Yumuşak Giriş Animasyonu */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-passage {
+      animation: fadeSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Özel İnce Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(110, 106, 95, 0.25);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(110, 106, 95, 0.45);
+    }
+
+    ::selection {
+      background-color: rgba(192, 97, 58, 0.22);
+      color: inherit;
+    }
+  </style>
+</head>
+<body class="paper-grain min-h-screen font-sans">
+
+  <!-- Toast Bildirim Alanı (alert() yerine) -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- 1. EDİTORYAL ÜST BAŞLIK ÇUBUĞU -->
+  <header class="sticky top-0 z-30 backdrop-blur-md bg-[#FAFAEF]/90 dark:bg-[#12121A]/90 border-b border-[#E5E1D3] dark:border-[#2A2938] transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between gap-3">
+
+        <!-- Sol: Marka, Hikâye Seçici & İçindekiler -->
+        <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+          <!-- İçindekiler / Bölümler Çekmecesi Tetikleyici -->
+          <button onclick="toggleChaptersDrawer()" title="İçindekiler ve Bölümler" class="p-2.5 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/80 dark:bg-[#181823] hover:border-[#C0613A] text-[#1C1B18] dark:text-[#EAE6DF] transition-all flex items-center gap-2 text-xs font-medium shrink-0">
+            <i data-lucide="book-open" class="w-4 h-4 text-[#C0613A] dark:text-[#D97348]"></i>
+            <span class="hidden md:inline">İçindekiler</span>
+          </button>
+
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="font-display font-bold text-xl sm:text-2xl tracking-tight text-[#1C1B18] dark:text-[#EAE6DF] truncate">
+                Ortak Roman
+              </span>
+              <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[#EBA834]/20 text-[#8F600D] dark:text-[#EBA834] border border-[#EBA834]/30">
+                Novella Atölyesi
+              </span>
+            </div>
+            <!-- Hikâye Seçici -->
+            <div class="flex items-center gap-1.5 text-[11px] text-[#6E6A5F] dark:text-[#9490A3]">
+              <span class="hidden sm:inline">Eser:</span>
+              <select id="story-selector" onchange="switchStory(this.value)" class="bg-transparent font-medium text-[#1C1B18] dark:text-[#EAE6DF] focus:outline-none cursor-pointer truncate max-w-[180px] sm:max-w-[260px]">
+                <option value="sis-ve-murekkep">Sis ve Mürekkep Arasında (4 Yazar)</option>
+                <option value="bosphorus-gecesi">Boğaz’da Son Tramvay (3 Yazar)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orta: 5.000 Kelimelik Novella İlerleme Çubuğu -->
+        <div class="hidden xl:flex flex-col w-72 shrink-0">
+          <div class="flex items-center justify-between text-[11px] mb-1">
+            <span id="header-arc-stage" class="text-[#6E6A5F] dark:text-[#9490A3] font-medium">Bölüm II • Düğüm Safhası</span>
+            <span class="font-mono text-[#1C1B18] dark:text-[#EAE6DF]">
+              <strong id="header-word-count">0</strong> / 5.000 kelime
+            </span>
+          </div>
+          <div class="w-full h-1.5 bg-[#E5E1D3] dark:bg-[#2A2938] rounded-full overflow-hidden">
+            <div id="header-progress-bar" class="h-full bg-gradient-to-r from-[#C0613A] to-[#EBA834] rounded-full transition-all duration-700 ease-out" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Sağ: Yazar İzleri Anahtarı, Yazar Kadrosu, Tema & Pasaj Ekle -->
+        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+
+          <!-- Yazar İzleri (Author Traces) Switch -->
+          <label title="Paragraflarda yazar izlerini göster veya gizle" class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/70 dark:bg-[#181823] cursor-pointer select-none">
+            <span class="text-[11px] font-medium text-[#6E6A5F] dark:text-[#9490A3] hidden sm:inline">Yazar İzleri</span>
+            <i data-lucide="highlighter" class="w-3.5 h-3.5 text-[#C0613A] sm:hidden"></i>
+            <div class="relative inline-flex items-center">
+              <input type="checkbox" id="author-traces-toggle" class="sr-only peer" checked onchange="toggleAuthorTraces()">
+              <div class="w-8 h-4 bg-[#E5E1D3] dark:bg-[#2A2938] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#C0613A] dark:peer-checked:bg-[#D97348]"></div>
+            </div>
+          </label>
+
+          <!-- Yazar Kadrosu & Davet Butonu -->
+          <button onclick="openAuthorsModal()" title="Yazar Kadrosu ve Davet" class="p-2.5 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/70 dark:bg-[#181823] hover:border-[#C0613A] text-[#1C1B18] dark:text-[#EAE6DF] transition-all flex items-center gap-1.5 text-xs font-medium">
+            <i data-lucide="users" class="w-4 h-4 text-[#2E6F73] dark:text-[#66B2B5]"></i>
+            <span class="hidden lg:inline">Kadro & Davet</span>
+          </button>
+
+          <!-- Gündüz Kağıdı / Gece Mürekkebi Tema Geçişi -->
+          <button onclick="toggleTheme()" title="Gündüz Kağıdı / Gece Mürekkebi" class="px-2.5 py-2 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/70 dark:bg-[#181823] hover:border-[#C0613A] text-[#1C1B18] dark:text-[#EAE6DF] transition-all flex items-center gap-1.5 text-xs font-medium">
+            <i data-lucide="moon" class="w-4 h-4 block dark:hidden text-[#6E6A5F]"></i>
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-[#EBA834]"></i>
+            <span id="theme-label" class="hidden md:inline text-[11px] text-[#6E6A5F] dark:text-[#9490A3]">Gündüz Kağıdı</span>
+          </button>
+
+          <!-- Pasaj Ekle Hızlı Aksiyon -->
+          <button onclick="scrollToStudio()" class="px-3.5 py-2 rounded-xl bg-[#C0613A] hover:bg-[#A8512D] dark:bg-[#D97348] dark:hover:bg-[#C0613A] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
+            <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>
+            <span>Pasaj Ekle</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobil / Tablet İlerleme Çubuğu -->
+    <div class="xl:hidden w-full h-1 bg-[#E5E1D3] dark:bg-[#2A2938]">
+      <div id="mobile-progress-bar" class="h-full bg-gradient-to-r from-[#C0613A] to-[#EBA834] transition-all duration-700" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- 2. ANA EDİTORYAL OKUMA TUVALİ (68ch TEK SÜTUN) -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-32">
+
+    <!-- Kitap / Hikâye Künye Başlığı -->
+    <section class="max-w-[68ch] mx-auto mb-12 pb-8 border-b border-[#E5E1D3] dark:border-[#2A2938]">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4 text-xs text-[#6E6A5F] dark:text-[#9490A3]">
+        <div class="flex items-center gap-2 font-mono">
+          <span id="story-issue-no">CİLT I • SAYI 04</span>
+          <span>•</span>
+          <span id="story-genre" class="text-[#C0613A] dark:text-[#D97348] font-sans font-semibold">Edebî Gizem / Novella</span>
+        </div>
+        <div class="font-mono text-[11px]">
+          <span id="meta-word-count">0</span> / 5.000 kelime (<span id="meta-pct">0%</span>)
+        </div>
+      </div>
+
+      <h1 id="story-main-title" class="font-display font-bold text-4xl sm:text-5xl md:text-[3.5rem] leading-[1.1] tracking-tight text-[#1C1B18] dark:text-[#EAE6DF] mb-4">
+        Sis ve Mürekkep Arasında
+      </h1>
+
+      <p id="story-epigraph" class="font-serif italic text-lg sm:text-xl text-[#6E6A5F] dark:text-[#9490A3] leading-relaxed mb-6">
+        “Büyükada’nın kış sessizliğinde, sahaf dükkânının kilitli çekmecesinden çıkan yarım kalmış bir elyazması dört eski dostu aynı sırrın etrafında toplar.”
+      </p>
+
+      <!-- Yazar Kadrosu Özeti ve Filtre Rozetleri -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div id="author-filter-bar" class="flex flex-wrap items-center gap-1.5">
+          <!-- JS ile dinamik dolacak -->
+        </div>
+
+        <button onclick="openChaptersDrawer()" class="text-xs font-medium text-[#C0613A] dark:text-[#D97348] hover:underline flex items-center gap-1">
+          <span>Bölümler arasında geçiş yap</span>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- BÖLÜMLER VE PASAJLAR OKUMA ALANI (68ch) -->
+    <article id="manuscript-canvas" class="max-w-[68ch] mx-auto space-y-14">
+      <!-- Bölümler ve paragraflar buraya render edilecek -->
+    </article>
+
+    <!-- Edebî Bölüm Sonu Süsü (Fleuron) -->
+    <div class="max-w-[68ch] mx-auto my-16 flex items-center justify-center gap-4 text-[#6E6A5F]/50 dark:text-[#9490A3]/40 select-none">
+      <span class="h-px w-20 bg-current"></span>
+      <span class="font-display text-2xl tracking-widest">❦</span>
+      <span class="h-px w-20 bg-current"></span>
+    </div>
+
+    <!-- 5. KOLEKTİF YAZIM STÜDYOSU (CONTRIBUTION STUDIO) -->
+    <section id="writing-studio" class="max-w-[68ch] mx-auto">
+      <div class="rounded-2xl border border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/85 dark:bg-[#181823]/95 p-6 sm:p-8 shadow-sm transition-all">
+
+        <!-- Stüdyo Üst Başlığı -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-[#E5E1D3] dark:border-[#2A2938]">
+          <div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="font-mono uppercase tracking-wider text-[#C0613A] dark:text-[#D97348] font-semibold">
+                Tur #<span id="studio-turn-no">7</span>
+              </span>
+              <span class="text-[#6E6A5F] dark:text-[#9490A3]">•</span>
+              <span id="draft-status-indicator" class="text-[#6E6A5F] dark:text-[#9490A3] italic">
+                Taslak henüz kaydedilmedi
+              </span>
+            </div>
+            <h2 class="font-display font-bold text-2xl sm:text-3xl text-[#1C1B18] dark:text-[#EAE6DF] mt-0.5">
+              Hikâyeye Yeni Bir Pasaj Ekle
+            </h2>
+          </div>
+
+          <!-- Yazar & Bölüm Seçiciler -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Yazar Seçici -->
+            <div class="flex items-center gap-1.5 bg-[#FAFAEF] dark:bg-[#12121A] px-3 py-1.5 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938]">
+              <span class="text-[11px] text-[#6E6A5F] dark:text-[#9490A3]">Yazar:</span>
+              <select id="studio-author-select" class="bg-transparent text-xs font-semibold text-[#1C1B18] dark:text-[#EAE6DF] focus:outline-none cursor-pointer">
+              </select>
+            </div>
+
+            <!-- Bölüm Seçici -->
+            <div class="flex items-center gap-1.5 bg-[#FAFAEF] dark:bg-[#12121A] px-3 py-1.5 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938]">
+              <span class="text-[11px] text-[#6E6A5F] dark:text-[#9490A3]">Bölüm:</span>
+              <select id="studio-chapter-select" class="bg-transparent text-xs font-semibold text-[#1C1B18] dark:text-[#EAE6DF] focus:outline-none cursor-pointer max-w-[150px]">
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yazım Alanı -->
+        <div class="relative">
+          <textarea
+            id="studio-textarea"
+            rows="6"
+            oninput="handleDraftInput()"
+            placeholder="Önceki pasajın bıraktığı duygudan ve atmosferden devam edin... (Örn: 'Pencere pervazına vuran yağmur damlaları hızlanırken, defterin arka kapağındaki mühür ilk kez dikkatini çekti...')"
+            class="w-full bg-transparent font-serif text-[1.2rem] sm:text-[1.28rem] leading-[1.85] text-[#1C1B18] dark:text-[#EAE6DF] placeholder-[#6E6A5F]/50 dark:placeholder-[#9490A3]/40 resize-y focus:outline-none"
+          ></textarea>
+        </div>
+
+        <!-- Alt Araç Çubuğu: Kelime Sınırı Göstergesi & Aksiyon Butonları -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5 mt-4 border-t border-[#E5E1D3] dark:border-[#2A2938]">
+
+          <!-- Canlı Kelime Sayacı & Min/Max Rehberi -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2 text-xs font-mono">
+              <span id="studio-word-count" class="font-semibold text-[#1C1B18] dark:text-[#EAE6DF]">0</span>
+              <span class="text-[#6E6A5F] dark:text-[#9490A3]">kelime</span>
+              <span id="studio-limit-badge" class="px-2 py-0.5 rounded-full text-[10px] bg-[#E5E1D3]/60 dark:bg-[#2A2938] text-[#6E6A5F] dark:text-[#9490A3]">
+                Hedef: 40 – 400 kelime
+              </span>
+            </div>
+            <div class="w-44 h-1.5 bg-[#E5E1D3] dark:bg-[#2A2938] rounded-full overflow-hidden">
+              <div id="studio-word-meter" class="h-full bg-[#C0613A] dark:bg-[#D97348] transition-all duration-300" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Buton Grubu: Örnek Metin, Taslak Kaydet, Pasajı Hikâyeye Ekle -->
+          <div class="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+            <button type="button" onclick="fillSamplePassage()" class="px-3 py-2 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938] hover:border-[#EBA834] text-xs font-medium text-[#6E6A5F] dark:text-[#9490A3] hover:text-[#1C1B18] dark:hover:text-[#EAE6DF] transition-all flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#EBA834]"></i>
+              <span>Örnek Metin Doldur</span>
+            </button>
+
+            <button type="button" onclick="saveLocalDraft()" class="px-3.5 py-2 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938] bg-[#FAFAEF] dark:bg-[#12121A] hover:border-[#C0613A] text-xs font-medium text-[#1C1B18] dark:text-[#EAE6DF] transition-all flex items-center gap-1.5">
+              <i data-lucide="bookmark" class="w-3.5 h-3.5 text-[#2E6F73] dark:text-[#66B2B5]"></i>
+              <span>Taslak Kaydet</span>
+            </button>
+
+            <button type="button" onclick="publishPassage()" class="px-4 py-2.5 rounded-xl bg-[#C0613A] hover:bg-[#A8512D] dark:bg-[#D97348] dark:hover:bg-[#C0613A] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
+              <span>Pasajı Hikâyeye Ekle</span>
+              <i data-lucide="feather" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MOBİL YÜZEN "PASAJ EKLE" BUTONU -->
+  <button onclick="scrollToStudio()" class="sm:hidden fixed bottom-5 left-5 z-30 px-4 py-3 rounded-full bg-[#C0613A] text-white text-xs font-semibold shadow-lg flex items-center gap-2">
+    <i data-lucide="pen-tool" class="w-4 h-4"></i>
+    <span>Pasaj Ekle</span>
+  </button>
+
+  <!-- 4. KENAR NOTLARI (MARGINALIA) YAN PANELİ (SLIDE-OVER) -->
+  <div id="marginalia-backdrop" onclick="closeMarginaliaPanel()" class="fixed inset-0 z-40 bg-black/35 backdrop-blur-xs hidden transition-opacity"></div>
+  <aside id="marginalia-drawer" class="fixed top-0 right-0 z-50 h-full w-full sm:w-[420px] bg-[#FAFAEF] dark:bg-[#181823] border-l border-[#E5E1D3] dark:border-[#2A2938] shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+    <!-- Üst Başlık -->
+    <div class="p-6 border-b border-[#E5E1D3] dark:border-[#2A2938] flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-[#C0613A]/10 text-[#C0613A] dark:text-[#D97348] flex items-center justify-center">
+          <i data-lucide="message-square-quote" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="font-display font-bold text-2xl text-[#1C1B18] dark:text-[#EAE6DF]">Kenar Notları</h3>
+          <p id="marginalia-subtitle" class="text-[11px] text-[#6E6A5F] dark:text-[#9490A3]">Seçili pasaj üzerine editör notları</p>
+        </div>
+      </div>
+      <button onclick="closeMarginaliaPanel()" class="p-2 rounded-xl hover:bg-[#E5E1D3]/60 dark:hover:bg-[#2A2938] text-[#6E6A5F]">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Seçili Pasaj Alıntısı -->
+    <div class="px-6 py-4 bg-[#F3F0E4]/70 dark:bg-[#12121A]/60 border-b border-[#E5E1D3] dark:border-[#2A2938]">
+      <div id="marginalia-author-tag" class="text-[11px] font-mono text-[#C0613A] dark:text-[#D97348] mb-1"></div>
+      <blockquote id="marginalia-quote" class="font-serif italic text-sm text-[#1C1B18]/85 dark:text-[#EAE6DF]/85 border-l-2 border-[#C0613A] pl-3 line-clamp-3 leading-relaxed">
+      </blockquote>
+    </div>
+
+    <!-- Not Listesi -->
+    <div id="marginalia-notes-list" class="flex-1 overflow-y-auto p-6 space-y-3.5">
+    </div>
+
+    <!-- Yeni Kenar Notu Formu -->
+    <div class="p-5 border-t border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/60 dark:bg-[#12121A]/70">
+      <label class="block text-[11px] font-medium text-[#6E6A5F] dark:text-[#9490A3] mb-1.5">
+        Yeni Kenar Notu Ekle (<span id="marginalia-active-writer">Fatih</span> olarak)
+      </label>
+      <div class="flex gap-2">
+        <input
+          id="marginalia-input"
+          type="text"
+          placeholder="Üslup, kurgu veya ipucu hakkında not düş..."
+          onkeydown="if(event.key==='Enter') addMarginaliaNote()"
+          class="flex-1 px-3.5 py-2.5 rounded-xl text-xs bg-[#FAFAEF] dark:bg-[#181823] border border-[#E5E1D3] dark:border-[#2A2938] text-[#1C1B18] dark:text-[#EAE6DF] focus:outline-none focus:border-[#C0613A]"
+        />
+        <button onclick="addMarginaliaNote()" class="px-4 py-2.5 rounded-xl bg-[#C0613A] hover:bg-[#A8512D] text-white text-xs font-semibold transition-colors">
+          Ekle
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 1B. İÇINDEKİLER / BÖLÜMLER ÇEKMECESİ -->
+  <div id="chapters-backdrop" onclick="closeChaptersDrawer()" class="fixed inset-0 z-40 bg-black/35 backdrop-blur-xs hidden transition-opacity"></div>
+  <aside id="chapters-drawer" class="fixed top-0 left-0 z-50 h-full w-80 sm:w-96 bg-[#FAFAEF] dark:bg-[#181823] border-r border-[#E5E1D3] dark:border-[#2A2938] shadow-2xl transform -translate-x-full transition-transform duration-300 ease-out flex flex-col">
+    <div class="p-6 border-b border-[#E5E1D3] dark:border-[#2A2938] flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-mono uppercase tracking-widest text-[#C0613A] dark:text-[#D97348]">Fihrist</span>
+        <h3 class="font-display font-bold text-2xl text-[#1C1B18] dark:text-[#EAE6DF]">İçindekiler & Bölümler</h3>
+      </div>
+      <button onclick="closeChaptersDrawer()" class="p-2 rounded-xl hover:bg-[#E5E1D3]/60 dark:hover:bg-[#2A2938] text-[#6E6A5F]">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <div id="chapters-list" class="flex-1 overflow-y-auto p-6 space-y-4">
+      <!-- Bölümler JS ile doldurulacak -->
+    </div>
+
+    <!-- Yeni Bölüm Açma -->
+    <div class="p-5 border-t border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/60 dark:bg-[#12121A]/70">
+      <label class="block text-[11px] font-medium text-[#6E6A5F] dark:text-[#9490A3] mb-1.5">Yeni Bölüm Başlığı Oluştur</label>
+      <div class="flex gap-2">
+        <input id="new-chapter-title-input" type="text" placeholder="Örn: Bölüm III — Kilitli Oda" class="flex-1 px-3 py-2 rounded-xl text-xs bg-[#FAFAEF] dark:bg-[#181823] border border-[#E5E1D3] dark:border-[#2A2938] text-[#1C1B18] dark:text-[#EAE6DF] focus:outline-none focus:border-[#C0613A]" />
+        <button onclick="createNewChapter()" class="px-3.5 py-2 rounded-xl bg-[#1C1B18] dark:bg-[#EAE6DF] text-[#FAFAEF] dark:text-[#12121A] text-xs font-semibold hover:opacity-90 transition-opacity">
+          Aç
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 1C. YAZAR KADROSU & DAVET MODALI -->
+  <div id="authors-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/45 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg rounded-2xl bg-[#FAFAEF] dark:bg-[#181823] border border-[#E5E1D3] dark:border-[#2A2938] p-6 sm:p-7 shadow-2xl animate-passage">
+      <div class="flex items-center justify-between pb-4 mb-5 border-b border-[#E5E1D3] dark:border-[#2A2938]">
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-[#2E6F73] dark:text-[#66B2B5]">Kolektif Masa</span>
+          <h3 class="font-display font-bold text-2xl text-[#1C1B18] dark:text-[#EAE6DF]">Yazar Kadrosu & Davet</h3>
+        </div>
+        <button onclick="closeAuthorsModal()" class="p-2 rounded-xl hover:bg-[#E5E1D3]/60 dark:hover:bg-[#2A2938] text-[#6E6A5F]">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Aktif Yazarlar ve Katkı İstatistikleri -->
+      <div id="authors-roster-list" class="space-y-3 mb-6 max-h-60 overflow-y-auto pr-1">
+      </div>
+
+      <!-- Yeni Ortak Yazar Davet Et -->
+      <div class="pt-4 border-t border-[#E5E1D3] dark:border-[#2A2938]">
+        <label class="block text-xs font-medium text-[#1C1B18] dark:text-[#EAE6DF] mb-2">
+          Masaya Yeni Ortak Yazar Davet Et
+        </label>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="invite-author-name" type="text" placeholder="Yazar adı veya mahlas (Örn: Kerem)" class="flex-1 px-3.5 py-2.5 rounded-xl text-xs bg-[#F3F0E4] dark:bg-[#12121A] border border-[#E5E1D3] dark:border-[#2A2938] text-[#1C1B18] dark:text-[#EAE6DF] focus:outline-none focus:border-[#C0613A]" />
+          <input id="invite-author-role" type="text" placeholder="Rol (Örn: Diyalog & Kurgu)" class="sm:w-44 px-3.5 py-2.5 rounded-xl text-xs bg-[#F3F0E4] dark:bg-[#12121A] border border-[#E5E1D3] dark:border-[#2A2938] text-[#1C1B18] dark:text-[#EAE6DF] focus:outline-none focus:border-[#C0613A]" />
+          <button onclick="inviteCoAuthor()" class="px-4 py-2.5 rounded-xl bg-[#C0613A] hover:bg-[#A8512D] text-white text-xs font-semibold transition-colors shrink-0">
+            Davet Et
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT UYGULAMA MANTIĞI -->
+  <script>
+    const TARGET_NOVELLA_WORDS = 5000;
+    const MIN_PASSAGE_WORDS = 40;
+    const MAX_PASSAGE_WORDS = 400;
+
+    // Renk Paleti (Terakota, Kehribar, Adaçayı/Mürekkep Yeşili, Mürdüm)
+    const COLOR_PALETTE = ['#C0613A', '#EBA834', '#2E6F73', '#6B5B95', '#9E4770'];
+
+    // İki Zengin Edebi Örnek Hikâye Verisi
+    const STORIES_DATA = {
+      'sis-ve-murekkep': {
+        id: 'sis-ve-murekkep',
+        issueNo: 'CİLT I • SAYI 04',
+        genre: 'Edebî Gizem / Novella',
+        title: 'Sis ve Mürekkep Arasında',
+        epigraph: '“Büyükada’nın kış sessizliğinde, sahaf dükkânının kilitli çekmecesinden çıkan yarım kalmış bir elyazması dört eski dostu aynı sırrın etrafında toplar.”',
+        authors: [
+          { name: 'Fatih', role: 'Kurucu Yazar & Atmosfer', color: '#C0613A' },
+          { name: 'Vika', role: 'Diyalog & Ritm', color: '#2E6F73' },
+          { name: 'Aya', role: 'Karakter Derinliği', color: '#EBA834' },
+          { name: 'Deniz', role: 'Kurgu & Düğüm', color: '#6B5B95' }
+        ],
+        chapters: [
+          {
+            id: 'ch-1',
+            roman: 'BÖLÜM I',
+            title: 'Keten Ciltli Defter',
+            passages: [
+              {
+                id: 101,
+                turn: 1,
+                author: 'Fatih',
+                timestamp: '24 Kasım, 21:14',
+                text: 'Kasım ayının son vapuru iskeleden ayrılırken, Nizam Caddesi’nin parke taşları üzerindeki ıslak yapraklar sokak lambalarının solgun ışığında bakır gibi parlıyordu. Sahaf Salih Efendi’nin kırk yıldır kimseye açmadığı arka odasındaki ceviz masanın üzerinde, sırtı keten bezle ciltlenmiş isimsiz bir defter duruyordu; sayfalarının arasına sıkışmış kurutulmuş bir defne yaprağı ve henüz kurumamış izlenimi veren koyu kestane rengi bir mürekkep lekesi vardı.',
+                notes: [
+                  { author: 'Vika', text: 'Giriş atmosferi harika; mürekkebin hâlâ taze görünmesi gizemi hemen kuruyor.' }
+                ]
+              },
+              {
+                id: 102,
+                turn: 2,
+                author: 'Vika',
+                timestamp: '25 Kasım, 19:40',
+                text: 'Defteri ilk eline alan Vika oldu; pencereden sızan deniz kokusuna karışan eski kâğıt ve sedir ağacı kokusunu içine çekti. İlk sayfanın sağ üst köşesinde, ince uçlu bir divitle düşülmüş tek bir cümle yer alıyordu: “Bu satırları okuyan dört kişiden biri, adaya hiç gelmemiş gibi davranacak.” Oysa odada yalnızca üç kişi vardı ve dışarıdaki rüzgâr, sanki dördüncü bir adım sesini taş merdivenlerden yukarı taşıyordu.',
+                notes: []
+              },
+              {
+                id: 103,
+                turn: 3,
+                author: 'Aya',
+                timestamp: '26 Kasım, 14:22',
+                text: 'Aya, sobanın üzerindeki çaydanlıktan yükselen ince buharın camda oluşturduğu buğuyu parmağıyla sildi ve karanlık bahçeye baktı. İskelenin ucundaki fener her zamankinden daha yavaş yanıp sönüyordu; sanki biri mors alfabesiyle yarım kalmış bir özrü tekrarlıyordu. “Salih Efendi bu defteri bize bırakmadı,” dedi sesini alçaltarak, “bizi bu defterin içine çağırdı.”',
+                notes: [
+                  { author: 'Deniz', text: 'Fenerin mors alfabesi detayı ikinci bölümde kilit rol oynayabilir.' }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'ch-2',
+            roman: 'BÖLÜM II',
+            title: '1984 Tarihli Vapur Bileti',
+            passages: [
+              {
+                id: 104,
+                turn: 4,
+                author: 'Deniz',
+                timestamp: '27 Kasım, 11:05',
+                text: 'Masanın altındaki pirinç kilitli çekmece kendiliğinden aralandığında, içinden yalnızca paslı bir posta kutusu anahtarı ve üzerinde 1984 tarihli bir vapur bileti çıktı. Biletin arkasındaki el yazısı, defterdekiyle birebir aynıydı ama bu kez mürekkep dağılmış, harfler yağmur damlalarıyla birbirine karışmıştı; sanki yazar son noktayı koyarken pencereyi açık bırakmıştı.',
+                notes: []
+              },
+              {
+                id: 105,
+                turn: 5,
+                author: 'Fatih',
+                timestamp: '27 Kasım, 16:48',
+                text: 'Anahtarın üzerindeki silik kabartmada “P.K. 17 — Heybeliada” ibaresi okunuyordu. Fatih bileti ışığa tuttuğunda, kâğıdın dokusu içindeki filigranın sıradan bir şehir hatları biletine ait olmadığını fark etti; kenar suyunda incecik çizilmiş bir pusula gülü vardı ve kuzey ibresi özellikle kırılmıştı.',
+                notes: [
+                  { author: 'Aya', text: 'Heybeliada bağlantısı mekânı genişletti, çok zarif bir geçiş.' }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      'bosphorus-gecesi': {
+        id: 'bosphorus-gecesi',
+        issueNo: 'CİLT I • SAYI 03',
+        genre: 'Şehir Hikâyesi / Melankoli',
+        title: 'Boğaz’da Son Tramvay',
+        epigraph: '“Gece yarısını on iki dakika geçe Karaköy’den kalkan son seferde, her yolcu kendi unuttuğu bir eşyayı arar.”',
+        authors: [
+          { name: 'Fatih', role: 'Anlatıcı', color: '#C0613A' },
+          { name: 'Aya', role: 'İç Monolog', color: '#EBA834' },
+          { name: 'Deniz', role: 'Zaman Kurgusu', color: '#2E6F73' }
+        ],
+        chapters: [
+          {
+            id: 'b-ch-1',
+            roman: 'BÖLÜM I',
+            title: 'Yağmurlu Raylar',
+            passages: [
+              {
+                id: 201,
+                turn: 1,
+                author: 'Fatih',
+                timestamp: '19 Kasım, 23:50',
+                text: 'Galata Köprüsü’nün altından geçen son motorun düdüğü Boğaz’ın iki yakasında yankılanırken, kırmızı tramvay zili gecenin nemli havasını ikiye böldü. Vatman, şapkasının siperliğini düzeltip arka vagonun boş koltuklarına baktı; oysa köşe camın yanında paltosunun yakasını kaldırmış bir adam çoktan yerini almıştı.',
+                notes: []
+              },
+              {
+                id: 202,
+                turn: 2,
+                author: 'Aya',
+                timestamp: '20 Kasım, 00:35',
+                text: 'Adamın dizlerinin üzerindeki kadife kutudan hafif bir zemberek sesi yükseliyordu. Durmayan ama zamanı da ölçmeyen eski bir cep saati gibiydi bu ses; her tıkırtıda camdaki yağmur damlaları aşağı doğru akmak yerine geriye, yukarıya doğru tırmanıyormuş gibi görünüyordu.',
+                notes: []
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    // Uygulama Durumu
+    let currentStoryId = 'sis-ve-murekkep';
+    let showAuthorTraces = true;
+    let selectedAuthorFilter = 'all';
+    let activeMarginaliaPassageId = null;
+
+    // Yardımcı Fonksiyonlar
+    function countWords(text) {
+      const cleaned = (text || '').trim();
+      if (!cleaned) return 0;
+      return cleaned.split(/\s+/).length;
+    }
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag]));
+    }
+
+    function getCurrentStory() {
+      return STORIES_DATA[currentStoryId];
+    }
+
+    function getAllPassages(story) {
+      return story.chapters.flatMap(ch => ch.passages);
+    }
+
+    function getAuthorColor(story, authorName) {
+      const found = story.authors.find(a => a.name === authorName);
+      return found ? found.color : '#C0613A';
+    }
+
+    // Ana Render Fonksiyonu
+    function renderApp() {
+      const story = getCurrentStory();
+      const allPassages = getAllPassages(story);
+      const totalWords = allPassages.reduce((acc, p) => acc + countWords(p.text), 0);
+      const pct = Math.min(100, (totalWords / TARGET_NOVELLA_WORDS) * 100);
+
+      // Üst Künye & İlerleme Güncelleme
+      document.getElementById('story-issue-no').textContent = story.issueNo;
+      document.getElementById('story-genre').textContent = story.genre;
+      document.getElementById('story-main-title').textContent = story.title;
+      document.getElementById('story-epigraph').textContent = story.epigraph;
+
+      document.getElementById('header-word-count').textContent = totalWords.toLocaleString('tr-TR');
+      document.getElementById('meta-word-count').textContent = totalWords.toLocaleString('tr-TR');
+      document.getElementById('meta-pct').textContent = `%${pct.toFixed(1)}`;
+      document.getElementById('header-progress-bar').style.width = `${pct}%`;
+      document.getElementById('mobile-progress-bar').style.width = `${pct}%`;
+
+      // Safha Etiketi
+      const arcEl = document.getElementById('header-arc-stage');
+      if (totalWords < 1200) arcEl.textContent = 'Bölüm I • Giriş & Atmosfer';
+      else if (totalWords < 3000) arcEl.textContent = 'Bölüm II • Düğüm Safhası';
+      else if (totalWords < 4300) arcEl.textContent = 'Bölüm III • Doruk Noktası';
+      else arcEl.textContent = 'Bölüm IV • Çözüm & Final';
+
+      // Yazar Filtre Çubuğu
+      renderAuthorFilterBar(story);
+
+      // Stüdyo Seçicileri
+      renderStudioSelectors(story, allPassages.length + 1);
+
+      // Okuma Tuvali (Bölümler & Paragraflar)
+      renderManuscriptCanvas(story);
+
+      // Çekmeceler ve Modallar
+      renderChaptersDrawer(story);
+      renderAuthorsRoster(story);
+
+      // Kayıtlı Taslağı Geri Yükle
+      loadLocalDraft();
+
+      lucide.createIcons();
+    }
+
+    function renderAuthorFilterBar(story) {
+      const bar = document.getElementById('author-filter-bar');
+      let html = `
+        <span class="text-[11px] uppercase tracking-wider text-[#6E6A5F] dark:text-[#9490A3] mr-1 font-medium">Kalemler:</span>
+        <button onclick="setAuthorFilter('all')" class="px-3 py-1 rounded-full text-xs font-medium transition-all border ${
+          selectedAuthorFilter === 'all'
+            ? 'bg-[#1C1B18] dark:bg-[#EAE6DF] text-[#FAFAEF] dark:text-[#12121A] border-[#1C1B18] dark:border-[#EAE6DF]'
+            : 'bg-[#F3F0E4]/80 dark:bg-[#181823] text-[#1C1B18] dark:text-[#EAE6DF] border-[#E5E1D3] dark:border-[#2A2938] hover:border-[#C0613A]'
+        }">Tümü</button>
+      `;
+
+      story.authors.forEach(a => {
+        const active = selectedAuthorFilter === a.name;
+        html += `
+          <button onclick="setAuthorFilter('${escapeHTML(a.name)}')" class="px-3 py-1 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
+            active
+              ? 'bg-[#1C1B18] dark:bg-[#EAE6DF] text-[#FAFAEF] dark:text-[#12121A] border-[#1C1B18] dark:border-[#EAE6DF]'
+              : 'bg-[#F3F0E4]/80 dark:bg-[#181823] text-[#1C1B18] dark:text-[#EAE6DF] border-[#E5E1D3] dark:border-[#2A2938] hover:border-[#C0613A]'
+          }">
+            <span class="w-2 h-2 rounded-full" style="background-color: ${a.color}"></span>
+            <span>${escapeHTML(a.name)}</span>
+          </button>
+        `;
+      });
+
+      bar.innerHTML = html;
+    }
+
+    function renderManuscriptCanvas(story) {
+      const canvas = document.getElementById('manuscript-canvas');
+      canvas.innerHTML = '';
+
+      story.chapters.forEach((chapter, chIdx) => {
+        const filteredPassages = selectedAuthorFilter === 'all'
+          ? chapter.passages
+          : chapter.passages.filter(p => p.author === selectedAuthorFilter);
+
+        if (filteredPassages.length === 0) return;
+
+        const chapterSection = document.createElement('section');
+        chapterSection.id = `chapter-${chapter.id}`;
+        chapterSection.className = 'space-y-7';
+
+        // Bölüm Başlığı
+        chapterSection.innerHTML = `
+          <div class="pt-2 pb-1">
+            <div class="text-[11px] font-mono uppercase tracking-[0.2em] text-[#C0613A] dark:text-[#D97348] mb-1">
+              ${escapeHTML(chapter.roman)}
+            </div>
+            <h2 class="font-display font-bold text-2xl sm:text-3xl text-[#1C1B18] dark:text-[#EAE6DF]">
+              ${escapeHTML(chapter.title)}
+            </h2>
+          </div>
+        `;
+
+        filteredPassages.forEach((p, pIdx) => {
+          const color = getAuthorColor(story, p.author);
+          const words = countWords(p.text);
+          const isOpeningParagraph = (pIdx === 0 && selectedAuthorFilter === 'all');
+          const noteCount = p.notes.length;
+
+          const pBlock = document.createElement('div');
+          pBlock.id = `passage-${p.id}`;
+          pBlock.onclick = () => openMarginaliaPanel(p.id);
+          pBlock.title = 'Kenar notlarını görmek veya eklemek için tıklayın';
+          pBlock.className = `group relative cursor-pointer rounded-r-xl transition-all duration-300 animate-passage ${
+            showAuthorTraces
+              ? 'pl-4 sm:pl-6 py-1 border-l-[3px] hover:bg-[#F3F0E4]/55 dark:hover:bg-[#181823]/70'
+              : 'pl-0 py-0.5 border-l-0 hover:bg-[#F3F0E4]/35 dark:hover:bg-[#181823]/40'
+          }`;
+
+          if (showAuthorTraces) {
+            pBlock.style.borderColor = color;
+          }
+
+          // Yazar İzleri Meta Satırı (Açıkken görünür)
+          const traceHeader = showAuthorTraces ? `
+            <div class="flex items-center justify-between font-sans text-[11px] mb-1.5 select-none">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md font-semibold text-[#1C1B18] dark:text-[#EAE6DF]" style="background-color: ${color}1A;">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${color}"></span>
+                  ${escapeHTML(p.author)}
+                </span>
+                <span class="font-mono text-[#6E6A5F] dark:text-[#9490A3]">Tur #${p.turn}</span>
+                <span class="hidden sm:inline text-[#6E6A5F] dark:text-[#9490A3]">• ${escapeHTML(p.timestamp)}</span>
+              </div>
+              <span class="font-mono text-[#6E6A5F] dark:text-[#9490A3]">${words} kelime</span>
+            </div>
+          ` : '';
+
+          // Sağ Kenar Notu İkonu
+          const marginBadge = `
+            <div class="mt-2 sm:mt-0 sm:absolute sm:-right-12 sm:top-1.5 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-sans transition-all ${
+              noteCount > 0
+                ? 'opacity-100 bg-[#C0613A]/12 text-[#C0613A] dark:text-[#D97348] font-semibold'
+                : 'opacity-45 sm:opacity-0 group-hover:opacity-100 text-[#6E6A5F] dark:text-[#9490A3] bg-[#F3F0E4] dark:bg-[#181823]'
+            }">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+              ${noteCount > 0 ? `<span class="font-mono">${noteCount}</span>` : ''}
+            </div>
+          `;
+
+          pBlock.innerHTML = `
+            ${traceHeader}
+            <p class="font-serif text-[1.22rem] sm:text-[1.32rem] leading-[1.88] text-[#1C1B18] dark:text-[#EAE6DF] ${isOpeningParagraph ? 'literary-dropcap' : ''}">
+              ${escapeHTML(p.text)}
+            </p>
+            ${marginBadge}
+          `;
+
+          chapterSection.appendChild(pBlock);
+        });
+
+        canvas.appendChild(chapterSection);
+      });
+    }
+
+    function renderStudioSelectors(story, nextTurn) {
+      document.getElementById('studio-turn-no').textContent = nextTurn;
+
+      const authorSelect = document.getElementById('studio-author-select');
+      const prevAuthor = authorSelect.value;
+      authorSelect.innerHTML = story.authors.map(a =>
+        `<option value="${escapeHTML(a.name)}">${escapeHTML(a.name)}</option>`
+      ).join('');
+      if (story.authors.some(a => a.name === prevAuthor)) {
+        authorSelect.value = prevAuthor;
+      }
+
+      const chapterSelect = document.getElementById('studio-chapter-select');
+      const prevChapter = chapterSelect.value;
+      chapterSelect.innerHTML = story.chapters.map(ch =>
+        `<option value="${ch.id}">${escapeHTML(ch.roman)}: ${escapeHTML(ch.title)}</option>`
+      ).join('');
+      if (story.chapters.some(ch => ch.id === prevChapter)) {
+        chapterSelect.value = prevChapter;
+      } else if (story.chapters.length > 0) {
+        chapterSelect.value = story.chapters[story.chapters.length - 1].id;
+      }
+    }
+
+    // Yazar İzleri Anahtarı
+    function toggleAuthorTraces() {
+      showAuthorTraces = document.getElementById('author-traces-toggle').checked;
+      renderManuscriptCanvas(getCurrentStory());
+      lucide.createIcons();
+      showToast(showAuthorTraces ? 'Yazar izleri ve tur bilgileri gösteriliyor.' : 'Saf basılı kitap görünümüne geçildi.');
+    }
+
+    function setAuthorFilter(authorName) {
+      selectedAuthorFilter = authorName;
+      renderApp();
+    }
+
+    // Tema Değiştirici (Gündüz Kağıdı / Gece Mürekkebi)
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const isDark = html.classList.contains('dark');
+      document.getElementById('theme-label').textContent = isDark ? 'Gece Mürekkebi' : 'Gündüz Kağıdı';
+      showToast(isDark ? 'Gece Mürekkebi (#12121A) moduna geçildi.' : 'Gündüz Kağıdı (#FAFAEF) moduna geçildi.');
+    }
+
+    // Hikâye Değiştirici
+    function switchStory(storyId) {
+      currentStoryId = storyId;
+      selectedAuthorFilter = 'all';
+      renderApp();
+      showToast(`“${getCurrentStory().title}” açıldı.`);
+    }
+
+    // Yazım Stüdyosu İşlemleri
+    function handleDraftInput() {
+      const text = document.getElementById('studio-textarea').value;
+      const words = countWords(text);
+      document.getElementById('studio-word-count').textContent = words;
+
+      const badge = document.getElementById('studio-limit-badge');
+      const meter = document.getElementById('studio-word-meter');
+      const pct = Math.min(100, (words / MAX_PASSAGE_WORDS) * 100);
+      meter.style.width = `${pct}%`;
+
+      if (words === 0) {
+        badge.textContent = `Hedef: ${MIN_PASSAGE_WORDS} – ${MAX_PASSAGE_WORDS} kelime`;
+        badge.className = 'px-2 py-0.5 rounded-full text-[10px] bg-[#E5E1D3]/60 dark:bg-[#2A2938] text-[#6E6A5F] dark:text-[#9490A3]';
+      } else if (words < MIN_PASSAGE_WORDS) {
+        badge.textContent = `En az ${MIN_PASSAGE_WORDS - words} kelime daha önerilir`;
+        badge.className = 'px-2 py-0.5 rounded-full text-[10px] bg-[#EBA834]/20 text-[#8F600D] dark:text-[#EBA834]';
+      } else if (words <= MAX_PASSAGE_WORDS) {
+        badge.textContent = 'İdeal pasaj uzunluğu ✓';
+        badge.className = 'px-2 py-0.5 rounded-full text-[10px] bg-[#2E6F73]/15 text-[#2E6F73] dark:text-[#66B2B5] font-medium';
+      } else {
+        badge.textContent = `Üst sınırı ${words - MAX_PASSAGE_WORDS} kelime aştı`;
+        badge.className = 'px-2 py-0.5 rounded-full text-[10px] bg-[#C0613A]/20 text-[#C0613A] font-medium';
+      }
+    }
+
+    function fillSamplePassage() {
+      const samples = [
+        'Biletin köşesindeki pusula gülüne parmağıyla dokunduğunda, sahaf dükkânının arka duvarındaki saat on ikiyi vurdu; ama sarkaç normalde olduğu gibi sağa sola değil, sanki görünmez bir rüzgârla içeri dışarı sallanıyordu. Vika defterin son sayfasını çevirdiğinde, mürekkebin henüz kurumadığı o satırların kendiliğinden uzadığını ve az önce konuştukları kelimeleri kâğıda döktüğünü gördü.',
+        'Lodos camları sarsarken masanın üzerindeki gaz lambası titredi ve duvarlarda uzun, kırık gölgeler belirdi. Aya, çekmeceden çıkan anahtarı defterin sırtındaki keten dikişin arasına yerleştirdiğinde, cildin içinden ince bir kâğıt hışırtısı duyuldu; sanki yıllardır bekleyen ikinci bir mektup gizlendiği yerden kurtulmuştu.'
+      ];
+      const textarea = document.getElementById('studio-textarea');
+      textarea.value = samples[Math.floor(Math.random() * samples.length)];
+      handleDraftInput();
+      textarea.focus();
+    }
+
+    function saveLocalDraft() {
+      const text = document.getElementById('studio-textarea').value;
+      const key = `ortak_roman_draft_${currentStoryId}`;
+      localStorage.setItem(key, text);
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      document.getElementById('draft-status-indicator').textContent = `Taslak kaydedildi (${timeStr})`;
+      showToast('Taslak tarayıcı hafızasına güvenle kaydedildi.');
+    }
+
+    function loadLocalDraft() {
+      const key = `ortak_roman_draft_${currentStoryId}`;
+      const saved = localStorage.getItem(key) || '';
+      document.getElementById('studio-textarea').value = saved;
+      document.getElementById('draft-status-indicator').textContent = saved ? 'Kayıtlı taslak yüklendi' : 'Taslak henüz kaydedilmedi';
+      handleDraftInput();
+    }
+
+    function publishPassage() {
+      const textarea = document.getElementById('studio-textarea');
+      const text = textarea.value.trim();
+      const words = countWords(text);
+
+      if (words < 8) {
+        showToast('Lütfen hikâyeye eklenecek anlamlı bir pasaj yazın.');
+        textarea.focus();
+        return;
+      }
+
+      const story = getCurrentStory();
+      const author = document.getElementById('studio-author-select').value;
+      const chapterId = document.getElementById('studio-chapter-select').value;
+      const chapter = story.chapters.find(c => c.id === chapterId) || story.chapters[story.chapters.length - 1];
+
+      const allPassages = getAllPassages(story);
+      const now = new Date();
+      const timestamp = `Bugün, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      const newPassage = {
+        id: Date.now(),
+        turn: allPassages.length + 1,
+        author,
+        timestamp,
+        text,
+        notes: []
+      };
+
+      chapter.passages.push(newPassage);
+      localStorage.removeItem(`ortak_roman_draft_${currentStoryId}`);
+      textarea.value = '';
+      selectedAuthorFilter = 'all';
+
+      renderApp();
+
+      // Sıradaki yazarı otomatik seç
+      const idx = story.authors.findIndex(a => a.name === author);
+      const nextAuthor = story.authors[(idx + 1) % story.authors.length].name;
+      document.getElementById('studio-author-select').value = nextAuthor;
+
+      showToast(`Tur #${newPassage.turn} (${author}) hikâyeye eklendi!`);
+
+      setTimeout(() => {
+        const el = document.getElementById(`passage-${newPassage.id}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 120);
+    }
+
+    // Kenar Notları (Marginalia) Paneli
+    function openMarginaliaPanel(passageId) {
+      const story = getCurrentStory();
+      const passage = getAllPassages(story).find(p => p.id === passageId);
+      if (!passage) return;
+
+      activeMarginaliaPassageId = passageId;
+      document.getElementById('marginalia-author-tag').textContent = `${passage.author} • Tur #${passage.turn} (${passage.timestamp})`;
+      document.getElementById('marginalia-quote').textContent = `“${passage.text}”`;
+      document.getElementById('marginalia-active-writer').textContent = document.getElementById('studio-author-select').value;
+
+      renderMarginaliaNotes(passage);
+
+      document.getElementById('marginalia-backdrop').classList.remove('hidden');
+      document.getElementById('marginalia-drawer').classList.remove('translate-x-full');
+    }
+
+    function closeMarginaliaPanel() {
+      document.getElementById('marginalia-backdrop').classList.add('hidden');
+      document.getElementById('marginalia-drawer').classList.add('translate-x-full');
+      activeMarginaliaPassageId = null;
+    }
+
+    function renderMarginaliaNotes(passage) {
+      const list = document.getElementById('marginalia-notes-list');
+      if (passage.notes.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-10 px-4 rounded-2xl border border-dashed border-[#E5E1D3] dark:border-[#2A2938]">
+            <p class="font-serif italic text-base text-[#6E6A5F] dark:text-[#9490A3]">
+              Bu pasaj için henüz kenar notu düşülmemiş. İlk editör notunu aşağıdan bırakabilirsiniz.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = passage.notes.map(n => `
+        <div class="p-3.5 rounded-xl bg-[#F3F0E4] dark:bg-[#12121A] border border-[#E5E1D3] dark:border-[#2A2938]">
+          <div class="flex items-center justify-between text-[11px] mb-1">
+            <span class="font-semibold text-[#C0613A] dark:text-[#D97348]">${escapeHTML(n.author)}</span>
+            <span class="font-mono text-[#6E6A5F] dark:text-[#9490A3]">Kenar Notu</span>
+          </div>
+          <p class="text-xs text-[#1C1B18] dark:text-[#EAE6DF] leading-relaxed">${escapeHTML(n.text)}</p>
+        </div>
+      `).join('');
+    }
+
+    function addMarginaliaNote() {
+      const input = document.getElementById('marginalia-input');
+      const text = input.value.trim();
+      if (!text || !activeMarginaliaPassageId) return;
+
+      const story = getCurrentStory();
+      const passage = getAllPassages(story).find(p => p.id === activeMarginaliaPassageId);
+      const writer = document.getElementById('studio-author-select').value;
+
+      passage.notes.push({ author: writer, text });
+      input.value = '';
+
+      renderMarginaliaNotes(passage);
+      renderManuscriptCanvas(story);
+      lucide.createIcons();
+      showToast('Kenar notu pasaja eklendi.');
+    }
+
+    // İçindekiler / Bölümler Çekmecesi
+    function toggleChaptersDrawer() {
+      const drawer = document.getElementById('chapters-drawer');
+      if (drawer.classList.contains('-translate-x-full')) {
+        openChaptersDrawer();
+      } else {
+        closeChaptersDrawer();
+      }
+    }
+
+    function openChaptersDrawer() {
+      document.getElementById('chapters-backdrop').classList.remove('hidden');
+      document.getElementById('chapters-drawer').classList.remove('-translate-x-full');
+    }
+
+    function closeChaptersDrawer() {
+      document.getElementById('chapters-backdrop').classList.add('hidden');
+      document.getElementById('chapters-drawer').classList.add('-translate-x-full');
+    }
+
+    function renderChaptersDrawer(story) {
+      const list = document.getElementById('chapters-list');
+      list.innerHTML = story.chapters.map(ch => {
+        const chWords = ch.passages.reduce((s, p) => s + countWords(p.text), 0);
+        return `
+          <div onclick="jumpToChapter('${ch.id}')" class="cursor-pointer p-4 rounded-xl border border-[#E5E1D3] dark:border-[#2A2938] bg-[#F3F0E4]/60 dark:bg-[#12121A]/60 hover:border-[#C0613A] transition-all">
+            <div class="flex items-center justify-between text-[11px] font-mono text-[#C0613A] dark:text-[#D97348] mb-1">
+              <span>${escapeHTML(ch.roman)}</span>
+              <span>${ch.passages.length} pasaj • ${chWords} klm</span>
+            </div>
+            <h4 class="font-display font-bold text-xl text-[#1C1B18] dark:text-[#EAE6DF]">${escapeHTML(ch.title)}</h4>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function jumpToChapter(chapterId) {
+      closeChaptersDrawer();
+      setTimeout(() => {
+        const el = document.getElementById(`chapter-${chapterId}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 220);
+    }
+
+    function createNewChapter() {
+      const input = document.getElementById('new-chapter-title-input');
+      const rawTitle = input.value.trim();
+      if (!rawTitle) return;
+
+      const story = getCurrentStory();
+      const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+      const nextRoman = `BÖLÜM ${romanNumerals[story.chapters.length] || (story.chapters.length + 1)}`;
+
+      const newCh = {
+        id: `ch-${Date.now()}`,
+        roman: nextRoman,
+        title: rawTitle,
+        passages: []
+      };
+
+      story.chapters.push(newCh);
+      input.value = '';
+      renderApp();
+      document.getElementById('studio-chapter-select').value = newCh.id;
+      closeChaptersDrawer();
+      scrollToStudio();
+      showToast(`${nextRoman}: “${rawTitle}” açıldı. İlk pasajı yazabilirsiniz.`);
+    }
+
+    // Yazar Kadrosu & Davet Modalı
+    function openAuthorsModal() {
+      const modal = document.getElementById('authors-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAuthorsModal() {
+      const modal = document.getElementById('authors-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderAuthorsRoster(story) {
+      const allPassages = getAllPassages(story);
+      const list = document.getElementById('authors-roster-list');
+
+      list.innerHTML = story.authors.map(a => {
+        const authorPassages = allPassages.filter(p => p.author === a.name);
+        const words = authorPassages.reduce((s, p) => s + countWords(p.text), 0);
+        return `
+          <div class="flex items-center justify-between p-3.5 rounded-xl bg-[#F3F0E4]/70 dark:bg-[#12121A]/70 border border-[#E5E1D3] dark:border-[#2A2938]">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-display font-bold text-lg" style="background-color: ${a.color}">
+                ${escapeHTML(a.name.charAt(0).toUpperCase())}
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-[#1C1B18] dark:text-[#EAE6DF]">${escapeHTML(a.name)}</div>
+                <div class="text-[11px] text-[#6E6A5F] dark:text-[#9490A3]">${escapeHTML(a.role)}</div>
+              </div>
+            </div>
+            <div class="text-right font-mono text-xs">
+              <div class="font-semibold text-[#1C1B18] dark:text-[#EAE6DF]">${words} kelime</div>
+              <div class="text-[10px] text-[#6E6A5F] dark:text-[#9490A3]">${authorPassages.length} pasaj</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function inviteCoAuthor() {
+      const nameInput = document.getElementById('invite-author-name');
+      const roleInput = document.getElementById('invite-author-role');
+      const name = nameInput.value.trim();
+      const role = roleInput.value.trim() || 'Konuk Yazar';
+
+      if (!name) {
+        showToast('Lütfen davet edilecek yazarın adını girin.');
+        return;
+      }
+
+      const story = getCurrentStory();
+      if (story.authors.some(a => a.name.toLowerCase() === name.toLowerCase())) {
+        showToast('Bu yazar zaten masada yer alıyor.');
+        return;
+      }
+
+      const color = COLOR_PALETTE[story.authors.length % COLOR_PALETTE.length];
+      story.authors.push({ name, role, color });
+
+      nameInput.value = '';
+      roleInput.value = '';
+      renderApp();
+      document.getElementById('studio-author-select').value = name;
+      showToast(`${name} ortak yazar kadrosuna eklendi.`);
+    }
+
+    function scrollToStudio() {
+      document.getElementById('writing-studio').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => document.getElementById('studio-textarea').focus(), 450);
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto px-4 py-3 rounded-xl bg-[#1C1B18] dark:bg-[#EAE6DF] text-[#FAFAEF] dark:text-[#12121A] text-xs font-medium shadow-lg border border-white/10 animate-passage flex items-center gap-2';
+      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-[#C0613A]"></span><span>${escapeHTML(message)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderApp();
+    });
+  </script>
+</body>
+</html>
